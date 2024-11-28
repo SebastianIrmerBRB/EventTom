@@ -18,7 +18,7 @@ public class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long voucherId;
+    private Long eventId;
 
     @Column(name = "title", nullable = false)
     private String title;
