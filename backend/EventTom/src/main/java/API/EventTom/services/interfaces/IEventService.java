@@ -9,6 +9,6 @@ public interface IEventService {
 
 
     public List<EventDTO> getAllEvents();
-    public EventDTO getEventById(int id);
+    public EventDTO getEventById(long id);
 
 }

@@ -24,6 +24,9 @@ public class Ticket {
     @Column(name = "status_used")
     private boolean statusUsed;
 
+    @Column(name = "base_price")
+    private Long basePrice;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "event_id", nullable = false)
     @JsonBackReference

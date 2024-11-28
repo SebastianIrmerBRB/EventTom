@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface IVoucherService {
 
-    public List<VoucherDTO> getByCustomerId(int customerId);
-    public VoucherDTO getVoucherById(int voucherId);
+    public List<VoucherDTO> getByCustomerId(String customerId);
+    public VoucherDTO getVoucherById(long voucherId);
 
 }

@@ -13,12 +13,11 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 public class Employee extends Person {
-
-    @Column(name = "employee_number")
+    @Column(name = "employee_number", unique = true, nullable = false)
     private String employeeNumber;
 
     // Ich meine, dass sollte separat in beiden existieren, da eventuell unterschiedlich
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")

@@ -12,12 +12,10 @@ import java.util.List;
 @Entity
 @Data
 public class Customer extends Person {
-
-    @Column(name = "customer_number")
+    @Column(name = "customer_number", unique = true, nullable = false)
     private String customerNumber;
 
-    // Ich meine, dass sollte separat in beiden existieren, da eventuell unterschiedlich
-    @Column(name = "created_at")
+    @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
