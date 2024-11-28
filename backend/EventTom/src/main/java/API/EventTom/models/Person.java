@@ -6,18 +6,21 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@MappedSuperclass
-@Data
+@Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class Person {
+@Data
+@Inheritance(strategy = InheritanceType.JOINED)
+@Table(name = "person")
+public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "email", nullable = false)
+    @Column(nullable = false, unique = true)
     private String email;
+
 }

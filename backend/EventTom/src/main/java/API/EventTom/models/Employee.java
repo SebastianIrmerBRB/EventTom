@@ -7,12 +7,24 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Employee extends Person {
-    @Column(name = "position_in_org")
-    private String positionInOrg;
+
+    @Column(name = "employee_number")
+    private String employeeNumber;
+
+    // Ich meine, dass sollte separat in beiden existieren, da eventuell unterschiedlich
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Position position;
 }

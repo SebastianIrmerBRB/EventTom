@@ -18,9 +18,6 @@ public class Ticket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long ticketId;
 
-    @Column(name = "final_price")
-    private long finalPrice;
-
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
