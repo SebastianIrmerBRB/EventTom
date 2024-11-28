@@ -9,7 +9,8 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-     //     @Query("SELECT v FROM Voucher v WHERE v.customer.customerNumber = :customerNumber")
      @Query("SELECT t FROM Ticket t WHERE t.customer.customerNumber = :customerNumber")
-     List<Ticket> findAllTicketsByCustomerNumber(String id);
+     List<Ticket> findAllTicketsByCustomerNumber(String customerNumber);
+     @Query("SELECT t FROM Ticket t WHERE t.event.eventId = :eventId")
+     List<Ticket> findAllByEventId(Long eventId);
 }

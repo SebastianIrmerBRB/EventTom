@@ -21,8 +21,8 @@ public class TicketService implements ITicketService {
     TicketRepository ticketRepository;
     StandardDTOMapper standardDTOMapper;
     @Override
-    public List<TicketDTO> getAllTickets() {
-        List<Ticket> tickets = ticketRepository.findAll();
+    public List<TicketDTO> getTicketByEventId(Long id) {
+        List<Ticket> tickets = ticketRepository.findAllByEventId(id);
         return tickets.stream()
                 .map(standardDTOMapper::mapTicketToTicketDTO)
                 .collect(Collectors.toList());

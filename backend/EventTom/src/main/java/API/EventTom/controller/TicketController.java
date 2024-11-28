@@ -2,6 +2,7 @@ package API.EventTom.controller;
 
 import API.EventTom.DTO.EmployeeDTO;
 import API.EventTom.DTO.TicketDTO;
+import API.EventTom.DTO.VoucherDTO;
 import API.EventTom.models.Ticket;
 import API.EventTom.services.interfaces.ITicketService;
 import lombok.AllArgsConstructor;
@@ -22,10 +23,16 @@ public class TicketController {
     ITicketService ticketService;
 
     // TODO: WRITE DTO FOR EACH REQUEST
-    @GetMapping
-    public ResponseEntity<List<TicketDTO>> getAllTickets() {
-        List<TicketDTO> tickets = ticketService.getAllTickets();
+    @GetMapping("/event/{eventId}")
+    public ResponseEntity<List<TicketDTO>> getAllTickets(@PathVariable Long eventId) {
+        List<TicketDTO> tickets = ticketService.getTicketByEventId(eventId);
         return ResponseEntity.ok(tickets);
+    }
+
+    @GetMapping("/customer/{customerId}")
+    public ResponseEntity<List<TicketDTO>> getCustomerTickets(@PathVariable String customerId) {
+        List<TicketDTO> vouchers = ticketService.getByCustomerId(customerId);
+        return ResponseEntity.ok(vouchers);
     }
 
     @GetMapping("/{id}")

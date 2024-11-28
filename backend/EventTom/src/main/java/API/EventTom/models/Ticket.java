@@ -21,8 +21,8 @@ public class Ticket {
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
 
-    @Column(name = "status_used")
-    private boolean statusUsed;
+    @Column(name = "status_used", nullable = false)
+    private boolean statusUsed = false;
 
     @Column(name = "base_price")
     private Long basePrice;
@@ -36,7 +36,5 @@ public class Ticket {
     @JoinColumn(name = "customer_id", nullable = false)
     @JsonBackReference
     private Customer customer;
-
-
 
 }
