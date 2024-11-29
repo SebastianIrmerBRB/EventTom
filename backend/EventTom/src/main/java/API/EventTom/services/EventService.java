@@ -32,4 +32,6 @@ public class EventService implements IEventService {
                 .orElseThrow(() -> new RuntimeException("Event with ID could not be found"));
         return standardDTOMapper.mapEventToEventDTO(event);
     }
+
+
 }

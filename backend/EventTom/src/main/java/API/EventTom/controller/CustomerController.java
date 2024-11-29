@@ -19,7 +19,7 @@ public class CustomerController {
     ICustomerService customerService;
 
     // TODO: WRITE DTO FOR EACH REQUEST
-
+    // TODO: CREATE CUSTOMER / REGISTER
     @GetMapping
     public ResponseEntity<List<CustomerDTO>> getAllCustomers() {
         List<CustomerDTO> customerDTOList = customerService.getAllCustomers();

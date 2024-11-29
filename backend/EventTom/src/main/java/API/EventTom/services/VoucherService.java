@@ -20,7 +20,7 @@ public class VoucherService implements IVoucherService {
     StandardDTOMapper standardDTOMapper;
 
     @Override
-    public List<VoucherDTO> getByCustomerId(String customerId) {
+    public List<VoucherDTO> getVouchersByCustomerId(String customerId) {
         List<Voucher> vouchers = voucherRepository.findAllVouchersByCustomerNumber(customerId);
 
         return vouchers.stream()

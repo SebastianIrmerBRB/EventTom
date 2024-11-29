@@ -27,5 +27,9 @@ public class Customer extends Person {
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Ticket> tickets = new ArrayList<>();
 
-
+    @Override
+    public String toString() {
+        return String.format("Customer[id=%d, customerNumber='%s', name='%s']",
+                getId(), getCustomerNumber(), getName());
+    }
 }

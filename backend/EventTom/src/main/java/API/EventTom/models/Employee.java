@@ -8,6 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Entity
@@ -22,6 +24,13 @@ public class Employee extends Person {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
+    private List<Event> createdEvents = new ArrayList<>();
+
+    // Events managed by this employee
+    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
+    private List<Event> managedEvents = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

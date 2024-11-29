@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ICustomerService {
 
-    public List<CustomerDTO> getAllCustomers();
-    public CustomerDTO getCustomerById(String id);
+    List<CustomerDTO> getAllCustomers();
+    CustomerDTO getCustomerById(String id);
 
 }

@@ -1,12 +1,10 @@
 package API.EventTom.controller;
 
 
-import API.EventTom.DTO.TicketDTO;
 import API.EventTom.DTO.VoucherDTO;
 import API.EventTom.services.interfaces.IVoucherService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,7 +17,7 @@ public class VoucherController {
     // TODO: WRITE DTO FOR EACH REQUEST
     @GetMapping("/customer/{customerId}")  // Better path for customer-specific vouchers
     public ResponseEntity<List<VoucherDTO>> getCustomerVouchers(@PathVariable String customerId) {
-        List<VoucherDTO> vouchers = voucherService.getByCustomerId(customerId);
+        List<VoucherDTO> vouchers = voucherService.getVouchersByCustomerId(customerId);
         return ResponseEntity.ok(vouchers);
     }
 

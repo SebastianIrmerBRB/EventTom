@@ -6,6 +6,6 @@ import java.util.List;
 
 public interface IEmployeeService {
 
-    public List<EmployeeDTO> getAllEmployees();
-    public EmployeeDTO getEmployeeById(String id);
+    List<EmployeeDTO> getAllEmployees();
+    EmployeeDTO getEmployeeById(String id);
 }

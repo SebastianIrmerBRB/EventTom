@@ -8,7 +8,7 @@ import java.util.List;
 public interface IEventService {
 
 
-    public List<EventDTO> getAllEvents();
-    public EventDTO getEventById(long id);
+    List<EventDTO> getAllEvents();
+    EventDTO getEventById(long id);
 
 }
