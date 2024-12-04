@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 public class StandardDTOMapper {
     public CustomerDTO mapCustomerToCustomerDTO(Customer customer) {
         CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setName(customer.getName());
+        customerDTO.setName(customer.getFirstName() + " " + customer.getLastName());
         customerDTO.setEmail(customer.getEmail());
         customerDTO.setTickets(customer.getTickets().stream()
                 .map(this::mapTicketToTicketDTO)
@@ -24,8 +24,10 @@ public class StandardDTOMapper {
     public EmployeeDTO mapEmployeeToEmployeeDTO(Employee employee) {
         EmployeeDTO employeeDTO = new EmployeeDTO();
         employeeDTO.setEmail(employee.getEmail());
-        employeeDTO.setPosition(employee.getPosition());
-        employeeDTO.setName(employee.getName());
+        employeeDTO.setRoles(employee.getRoles().stream()
+                .map(Role::getName)
+                .collect(Collectors.toSet()));
+        employeeDTO.setName(employee.getFirstName() + " " + employee.getLastName());
         return employeeDTO;
     }
 

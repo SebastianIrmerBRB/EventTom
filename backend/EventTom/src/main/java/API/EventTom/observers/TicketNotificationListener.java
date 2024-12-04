@@ -1,6 +1,6 @@
 package API.EventTom.observers;
 
-import API.EventTom.models.Position;
+import API.EventTom.models.Roles;
 import API.EventTom.repositories.EmployeeRepository;
 import API.EventTom.services.interfaces.INotificationService;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +36,7 @@ public class TicketNotificationListener {
 
     private void sendManagerNotification(TicketPurchaseEvent event, String notificationType) {
         String message = createManagerMessage(event);
-        employeeRepository.findByPositionAndEvent(Position.EVENT_MANAGER, event.getEvent())
+        employeeRepository.findByRoleAndEvent(Roles.EVENT_MANAGER, event.getEvent())
                 .forEach(manager -> {
                     notificationService.notifyUser(manager, message, notificationType);
                 });

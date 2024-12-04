@@ -1,7 +1,7 @@
 package API.EventTom.services.interfaces;
 
-import API.EventTom.models.Person;
+import API.EventTom.models.User;
 
 public interface INotificationService {
-    void notifyUser(Person recipient, String message, String notificationType);
+    void notifyUser(User recipient, String message, String notificationType);
 }

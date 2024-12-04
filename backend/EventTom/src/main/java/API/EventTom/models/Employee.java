@@ -2,10 +2,8 @@ package API.EventTom.models;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -14,7 +12,7 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Employee extends Person {
+public class Employee extends User {
     @Column(name = "employee_number", unique = true, nullable = false)
     private String employeeNumber;
 
@@ -32,7 +30,12 @@ public class Employee extends Person {
     @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
     private List<Event> managedEvents = new ArrayList<>();
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Position position;
+    @PrePersist
+    protected void onCreate() {
+        if (createdAt == null) {
+            createdAt = LocalDateTime.now();
+        }
+    }
+
+
 }

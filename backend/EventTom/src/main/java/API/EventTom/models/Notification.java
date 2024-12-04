@@ -13,7 +13,7 @@ public class Notification {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "recipient_id", nullable = false)
-    private Person recipient;
+    private User recipient;
 
     @Column(nullable = false)
     private String message;
@@ -21,8 +21,8 @@ public class Notification {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(nullable = false)
-    private boolean read = false;
+    @Column(name = "is_read", nullable = false)  // Changed field name and added explicit column name
+    private boolean isRead = false;
 
     @Column(nullable = false)
     private String notificationType; // e.g., "TICKET_PURCHASE", "EVENT_UPDATE"

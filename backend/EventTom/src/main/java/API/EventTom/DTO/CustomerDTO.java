@@ -16,5 +16,4 @@ public class CustomerDTO {
     public String email;
     public List<VoucherDTO> vouchers;
     public List<TicketDTO> tickets;
-
 }

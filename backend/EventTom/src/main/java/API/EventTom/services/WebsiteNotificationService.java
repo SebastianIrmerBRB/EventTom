@@ -1,9 +1,9 @@
 package API.EventTom.services;
 
 import API.EventTom.models.Notification;
-import API.EventTom.models.Person;
+import API.EventTom.models.User;
 import API.EventTom.repositories.NotificationRepository;
-import API.EventTom.repositories.PersonRepository;
+import API.EventTom.repositories.UserRepository;
 import API.EventTom.services.interfaces.INotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,11 +16,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebsiteNotificationService implements INotificationService {
     private final NotificationRepository notificationRepository;
-    private final PersonRepository personRepository;
+    private final UserRepository personRepository;
 
     @Override
     @Transactional
-    public void notifyUser(Person recipient, String message, String notificationType) {
+    public void notifyUser(User recipient, String message, String notificationType) {
         Notification notification = new Notification();
         notification.setRecipient(recipient);
         notification.setMessage(message);
@@ -36,16 +36,16 @@ public class WebsiteNotificationService implements INotificationService {
         //  indem da erst Anfrage gemacht wird und dann
         //  dadurch die Anfrage (aber eig. nich gut, weil für jeden Nutzertyp einzelne Methode)
 
-        Person person = personRepository.findById(personId)
+        User user = personRepository.findById(personId)
                 .orElseThrow(() -> new RuntimeException("Person not found"));
-        return notificationRepository.findByRecipientAndReadOrderByCreatedAtDesc(person, false);
+        return notificationRepository.findByRecipientAndIsReadOrderByCreatedAtDesc(user, false);
     }
 
     @Transactional(readOnly = true)
     public List<Notification> getAllNotificationsByPersonId(Long personId) {
-        Person person = personRepository.findById(personId)
+        User user = personRepository.findById(personId)
                 .orElseThrow(() -> new RuntimeException("Person not found"));
-        return notificationRepository.findByRecipientOrderByCreatedAtDesc(person);
+        return notificationRepository.findByRecipientOrderByCreatedAtDesc(user);
     }
 
     @Transactional
@@ -58,19 +58,19 @@ public class WebsiteNotificationService implements INotificationService {
 
     @Transactional
     public void markAllAsReadByPersonId(Long personId) {
-        Person person = personRepository.findById(personId)
+        User user = personRepository.findById(personId)
                 .orElseThrow(() -> new RuntimeException("Person not found"));
-        notificationRepository.markAllAsRead(person);
+        notificationRepository.markAllAsRead(user);
     }
 
     // Method for testing/prototyping
     @Transactional
     public void createTestNotification(Long personId) {
-        Person person = personRepository.findById(personId)
+        User user = personRepository.findById(personId)
                 .orElseThrow(() -> new RuntimeException("Person not found"));
 
         Notification notification = new Notification();
-        notification.setRecipient(person);
+        notification.setRecipient(user);
         notification.setMessage("Test notification at " + LocalDateTime.now());
         notification.setCreatedAt(LocalDateTime.now());
         notification.setNotificationType("TEST");
