@@ -1,5 +1,6 @@
 package API.EventTom.config;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -62,22 +63,26 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
-                        .requestMatchers("/api/employee/**").hasRole("EMPLOYEE")
-                        .requestMatchers("/api/customer/**").hasAnyRole("CUSTOMER", "EMPLOYEE")
+                        .requestMatchers("/api/customers").permitAll()
+                        .requestMatchers("/api/customers/{id}").permitAll()
+                        // .requestMatchers("/api/employee/**").hasRole("ADMINISTRATOR")  // Added Administrator role requirement
                         .anyRequest().authenticated()
                 )
-                .formLogin(form -> form
-                        .loginPage("/api/auth/login")
-                        .loginProcessingUrl("/api/auth/login")
-                        .defaultSuccessUrl("/api/home")
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/api/auth/logout")
-                        .logoutSuccessUrl("/api/auth/login")
-                        .permitAll()
-                )
-                .csrf(AbstractHttpConfigurer::disable);
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                .csrf(AbstractHttpConfigurer::disable)
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Unauthorized\", \"message\": \"" + authException.getMessage() + "\"}");
+                        })
+                        .accessDeniedHandler((request, response, accessDeniedException) -> {
+                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            response.setContentType("application/json");
+                            response.getWriter().write("{\"error\": \"Forbidden\", \"message\": \"" + accessDeniedException.getMessage() + "\"}");
+                        })
+                );
 
         return http.build();
     }

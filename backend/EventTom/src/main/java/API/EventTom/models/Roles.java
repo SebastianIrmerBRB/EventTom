@@ -8,6 +8,7 @@ public enum Roles {
     EVENT_CREATOR("Event Creator"),
     SALES_REP("Sales Representative"),
     ADMINISTRATOR("Administrator"),
+
     NONE("No Role");
 
     private final String displayName;

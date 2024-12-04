@@ -18,6 +18,8 @@ public class StandardDTOMapper {
         customerDTO.setVouchers(customer.getVouchers().stream()
                 .map(this::mapVoucherToVoucherDTO)
                 .collect(Collectors.toList()));
+        System.out.println(customerDTO);
+
         return customerDTO;
     }
 
