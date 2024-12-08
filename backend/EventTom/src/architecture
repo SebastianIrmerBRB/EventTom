@@ -69,7 +69,8 @@ graph TB
     %% Support Services
     validation -.->|Validates| ApplicationLayer
     lombok -.->|Reduces Boilerplate| ApplicationLayer
-    jpa -.-|ORM| repository
+    jpa -.->|ORM Mapping| entity
+    jpa -.->|Repository Interface| repository
 
     classDef vue fill:#42b883,stroke:#fff,stroke-width:2px,color:white
     classDef spring fill:#6db33f,stroke:#fff,stroke-width:2px,color:white
