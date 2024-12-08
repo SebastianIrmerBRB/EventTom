@@ -49,7 +49,7 @@ graph TB
     vuex <-->|HTTP Request| router
 
     %% Frontend to Backend Communication
-    router -->|Bearer Token + JSON| cors
+    router -->|Header + JSON| cors
     cors -->|Add CORS Headers| security
     security -->|Validate Token| jwt
     jwt -.->|Revocation Check| entity
