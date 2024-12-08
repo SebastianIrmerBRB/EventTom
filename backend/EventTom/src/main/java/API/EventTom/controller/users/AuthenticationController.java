@@ -1,7 +1,7 @@
 package API.EventTom.controller.users;
 
 import API.EventTom.DTO.request.LoginRequest;
-import API.EventTom.services.user.interfaces.IAuthenticationService;
+import API.EventTom.services.users.interfaces.IAuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

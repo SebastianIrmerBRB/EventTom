@@ -2,7 +2,7 @@ package API.EventTom.controller;
 
 
 import API.EventTom.DTO.VoucherDTO;
-import API.EventTom.services.voucher.IVoucherService;
+import API.EventTom.services.vouchers.IVoucherService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

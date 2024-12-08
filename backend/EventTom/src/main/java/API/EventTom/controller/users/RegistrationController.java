@@ -2,7 +2,7 @@ package API.EventTom.controller.users;
 
 import API.EventTom.DTO.request.CustomerRegisterRequest;
 import API.EventTom.DTO.request.EmployeeRegisterRequest;
-import API.EventTom.services.user.interfaces.IRegistrationService;
+import API.EventTom.services.users.interfaces.IRegistrationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

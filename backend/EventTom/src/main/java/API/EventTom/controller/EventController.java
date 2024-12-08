@@ -1,7 +1,7 @@
 package API.EventTom.controller;
 
 import API.EventTom.DTO.EventDTO;
-import API.EventTom.services.event.IEventService;
+import API.EventTom.services.events.IEventService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,0 +1,299 @@
+classDiagram
+    class IVoucherValidator {
+        <<interface>>
+        +validateVoucher(String voucherCode, String customerId, long purchaseAmount) void
+        +calculateDiscountedAmount(String voucherCode, long originalAmount) long
+    }
+
+    class VoucherValidator {
+        -VoucherRepository voucherRepository
+        +validateVoucher(String voucherCode, String customerId, long purchaseAmount) void
+        +calculateDiscountedAmount(String voucherCode, long originalAmount) long
+        -validateVoucherOwnership(Voucher voucher, String customerId) void
+        -validateVoucherExpiration(Voucher voucher) void
+        -validateVoucherAmount(Voucher voucher) void
+        -validatePurchaseAmount(Voucher voucher, long purchaseAmount) void
+    }
+
+    class AuthenticationController {
+        -IAuthenticationService authenticationService
+        +login(LoginRequest) ResponseEntity
+        +logout() ResponseEntity
+    }
+
+    class CustomerController {
+        -ICustomerService customerService
+        +getAllCustomers() ResponseEntity~List~CustomerDTO~~
+        +getCustomerById(String) ResponseEntity~CustomerDTO~
+    }
+
+    class EmployeeController {
+        -IEmployeeService employeeService
+        +getAllEmployees() ResponseEntity~List~EmployeeDTO~~
+        +getCustomerById(String) ResponseEntity~EmployeeDTO~
+    }
+
+    class RegistrationController {
+        -IRegistrationService registrationService
+        +registerCustomer(CustomerRegisterRequest) ResponseEntity
+        +registerEmployee(EmployeeRegisterRequest) ResponseEntity
+    }
+
+    class RoleManagementController {
+        -IRoleManagementService roleManagementService
+        +assignRole(Long, Roles) ResponseEntity
+        +assignRoles(Long, Set~Roles~) ResponseEntity
+    }
+
+    class EventController {
+        -IEventService eventService
+        +getAllEvents() ResponseEntity~List~EventDTO~~
+        +getEventById(long) ResponseEntity~EventDTO~
+    }
+
+    class NotificationController {
+        -WebsiteNotificationServiceImpl notificationService
+        +getUnreadNotifications(Long) ResponseEntity~List~Notification~~
+        +getAllNotifications(Long) ResponseEntity~List~Notification~~
+        +markAsRead(Long) ResponseEntity~Void~
+        +markAllAsRead(Long) ResponseEntity~Void~
+    }
+
+    class TicketController {
+        -ITicketPurchaseService ticketPurchaseService
+        -ITicketQueryService ticketQueryService
+        +getEventTickets(Long) ResponseEntity~List~TicketDTO~~
+        +getCustomerTickets(String) ResponseEntity~List~TicketDTO~~
+        +getTicketById(long) ResponseEntity~TicketDTO~
+        +purchaseTicket(PurchaseTicketDTO) ResponseEntity~Void~
+    }
+
+    class VoucherController {
+        -IVoucherService voucherService
+        +getCustomerVouchers(String) ResponseEntity~List~VoucherDTO~~
+        +getVoucher(long) ResponseEntity~VoucherDTO~
+    }
+
+    class CustomerRepository {
+        <<interface>>
+        +findCustomerByCustomerNumber(String) Optional~Customer~
+    }
+    class EmployeeRepository {
+        <<interface>>
+        +findEmployeeByEmployeeNumber(String) Optional~Employee~
+        +findByRoleAndEvent(Roles, Event) List~Employee~
+    }
+    class EventRepository {
+        <<interface>>
+        +findAll() List~Event~
+        +findById(Long) Optional~Event~
+    }
+    class NotificationRepository {
+        <<interface>>
+        +findByRecipientAndIsReadOrderByCreatedAtDesc(User, boolean) List~Notification~
+        +findByRecipientOrderByCreatedAtDesc(User) List~Notification~
+        +markAllAsRead(User) void
+    }
+    class RoleRepository {
+        <<interface>>
+        +findByName(Roles) Optional~Role~
+    }
+    class TicketRepository {
+        <<interface>>
+        +findAllTicketsByCustomerNumber(String) List~Ticket~
+        +findAllByEventId(Long) List~Ticket~
+    }
+    class UserRepository {
+        <<interface>>
+        +findByEmail(String) Optional~User~
+    }
+
+    class VoucherRepository {
+        <<interface>>
+        +findAllVouchersByCustomerNumber(String) List~Voucher~
+    }
+
+    %% Observers
+    class TicketPurchaseEvent {
+        -Ticket ticket
+        -Event event
+        -long remainingTickets
+        -double soldPercentage
+        +getTicket() Ticket
+        +getEvent() Event
+        +getRemainingTickets() long
+        +getSoldPercentage() double
+    }
+
+    class TicketNotificationListener {
+        -EmployeeRepository employeeRepository
+        -INotificationService notificationService
+        +handleTicketPurchase(TicketPurchaseEvent) void
+    }
+
+    %% Services
+    class IVoucherService {
+        <<interface>>
+        +getVouchersByCustomerId(String) List~VoucherDTO~
+        +getVoucherById(long) VoucherDTO
+    }
+
+    class INotificationService {
+        <<interface>>
+        +notifyUser(User, String, String) void
+    }
+
+    class WebsiteNotificationServiceImpl {
+        -NotificationRepository notificationRepository
+        -UserRepository personRepository
+    }
+
+    class IEventService {
+        <<interface>>
+        +getAllEvents() List~EventDTO~
+        +getEventById(long) EventDTO
+    }
+
+    class EventServiceImpl {
+        -EventRepository eventRepository
+        -StandardDTOMapper standardDTOMapper
+    }
+
+    class IVoucherService {
+        <<interface>>
+        +getVouchersByCustomerId(String customerId) List~VoucherDTO~
+        +getVoucherById(long voucherId) VoucherDTO
+    }
+
+    class Voucher {
+        -Long voucherId
+        -long amount
+        -LocalDateTime dateValidUntil
+        -Customer customer
+    }
+
+    class UserNumberGenerator {
+        +generateCustomerNumber() String
+        +generateEmployeeNumber() String
+    }
+
+    class IAuthenticationService {
+        <<interface>>
+        +login(LoginRequest request) ResponseEntity
+        +logout() ResponseEntity
+    }
+
+    class AuthenticationServiceImpl {
+        -UserRepository userRepository
+        -AuthenticationManager authenticationManager
+        +login(LoginRequest request) ResponseEntity
+        +logout() ResponseEntity
+    }
+
+    class ICustomerService {
+        <<interface>>
+        +getAllCustomers() List~CustomerDTO~
+        +getCustomerById(String id) CustomerDTO
+    }
+
+    class CustomerServiceImpl {
+        -CustomerRepository customerRepository
+        -StandardDTOMapper standardDTOMapper
+        +getAllCustomers() List~CustomerDTO~
+        +getCustomerById(String id) CustomerDTO
+    }
+
+    class IEmployeeService {
+        <<interface>>
+        +getAllEmployees() List~EmployeeDTO~
+        +getEmployeeById(String id) EmployeeDTO
+    }
+
+    class EmployeeServiceImpl {
+        -EmployeeRepository employeeRepository
+        -StandardDTOMapper standardDTOMapper
+        +getAllEmployees() List~EmployeeDTO~
+        +getEmployeeById(String id) EmployeeDTO
+    }
+
+    class IRoleManagementService {
+        <<interface>>
+        +assignRole(Long userId, Roles role) void
+        +assignRoles(Long userId, Set~Roles~ roles) void
+        +removeRole(Long userId, Roles role) void
+        +getDefaultRoles() Set~Role~
+        +getRolesByNames(Set~Roles~ roleNames) Set~Role~
+    }
+
+    class RoleManagementServiceImpl {
+        -UserRepository userRepository
+        -RoleRepository roleRepository
+        +assignRole(Long userId, Roles role) void
+        +assignRoles(Long userId, Set~Roles~ roles) void
+        +removeRole(Long userId, Roles role) void
+        +getDefaultRoles() Set~Role~
+        +getRolesByNames(Set~Roles~ roleNames) Set~Role~
+    }
+
+    class IRegistrationService {
+        <<interface>>
+        +registerCustomer(CustomerRegisterRequest request) ResponseEntity
+        +registerEmployee(EmployeeRegisterRequest request) ResponseEntity
+    }
+
+    class RegistrationServiceImpl {
+        -UserRepository userRepository
+        -CustomerRepository customerRepository
+        -EmployeeRepository employeeRepository
+        -PasswordEncoder passwordEncoder
+        -UserNumberGenerator userNumberGenerator
+        -IRoleManagementService roleManagementService
+        +registerCustomer(CustomerRegisterRequest request) ResponseEntity
+        +registerEmployee(EmployeeRegisterRequest request) ResponseEntity
+    }
+
+    class CustomUserDetailsServiceImpl {
+        -UserRepository userRepository
+        +loadUserByUsername(String email) UserDetails
+    }
+
+    class INotificationService {
+        <<interface>>
+        +notifyUser(User recipient, String message, String notificationType) void
+    }
+
+    class WebsiteNotificationServiceImpl {
+        -NotificationRepository notificationRepository
+        -UserRepository personRepository
+        +notifyUser(User recipient, String message, String notificationType) void
+        +getUnreadNotificationsByPersonId(Long personId) List~Notification~
+        +getAllNotificationsByPersonId(Long personId) List~Notification~
+        +markAsRead(Long notificationId) void
+        +markAllAsReadByPersonId(Long personId) void
+        +createTestNotification(Long personId) void
+    }
+
+    class IEventService {
+        <<interface>>
+        +getAllEvents() List~EventDTO~
+        +getEventById(long id) EventDTO
+    }
+
+    class EventServiceImpl {
+        -EventRepository eventRepository
+        -StandardDTOMapper standardDTOMapper
+        +getAllEvents() List~EventDTO~
+        +getEventById(long id) EventDTO
+    }
+
+    AuthenticationServiceImpl ..|> IAuthenticationService
+    CustomerServiceImpl ..|> ICustomerService
+    EmployeeServiceImpl ..|> IEmployeeService
+    RoleManagementServiceImpl ..|> IRoleManagementService
+    RegistrationServiceImpl ..|> IRegistrationService
+    WebsiteNotificationServiceImpl ..|> INotificationService
+    EventServiceImpl ..|> IEventService
+    Voucher --> Customer
+
+    RegistrationServiceImpl --> UserNumberGenerator
+    RegistrationServiceImpl --> IRoleManagementService

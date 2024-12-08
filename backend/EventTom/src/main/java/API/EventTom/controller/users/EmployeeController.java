@@ -1,7 +1,7 @@
 package API.EventTom.controller.users;
 
 import API.EventTom.DTO.EmployeeDTO;
-import API.EventTom.services.user.interfaces.IEmployeeService;
+import API.EventTom.services.users.interfaces.IEmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

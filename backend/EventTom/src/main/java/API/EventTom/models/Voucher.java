@@ -17,6 +17,9 @@ public class Voucher {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long voucherId;
 
+    @Column(name = "code", unique = true, nullable = false, length = 20)
+    private String code;
+
     @Column(name = "amount")
     private long amount;
 

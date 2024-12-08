@@ -15,6 +15,7 @@ public class PurchaseTicketDTO {
     Long eventId;
     Long ticketId;
     int amount;
+    String voucherCode; // Optional
     String customerNumber;
     Long voucherId;
 }

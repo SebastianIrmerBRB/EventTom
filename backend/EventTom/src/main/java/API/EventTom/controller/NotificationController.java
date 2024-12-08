@@ -1,7 +1,7 @@
 package API.EventTom.controller;
 
 import API.EventTom.models.Notification;
-import API.EventTom.services.notification.WebsiteNotificationServiceImpl;
+import API.EventTom.services.notifications.WebsiteNotificationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

@@ -25,6 +25,9 @@ public class Ticket {
     @Column(name = "status_used", nullable = false)
     private boolean statusUsed = false;
 
+    @Column(name = "final_price")
+    private Long finalPrice;
+
     @Column(name = "base_price")
     private Long basePrice;
 

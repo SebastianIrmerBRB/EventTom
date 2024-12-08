@@ -1,0 +1,84 @@
+classDiagram
+    class User {
+        +Long id
+        +String firstName
+        +String lastName
+        +String email
+        +String password
+        +Set<Role> roles
+        +boolean enabled
+        +getAuthorities()
+        +getUsername()
+    }
+
+    class Customer {
+        +String customerNumber
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+        +List<Voucher> vouchers
+        +List<Ticket> tickets
+    }
+
+    class Employee {
+        +String employeeNumber
+        +LocalDateTime createdAt
+        +LocalDateTime updatedAt
+        +List<Event> createdEvents
+        +List<Event> managedEvents
+    }
+
+    class Event {
+        +Long eventId
+        +String title
+        +LocalDateTime dateOfEvent
+        +long totalTickets
+        +long totalSoldTickets
+        +long thresholdValue
+        +long basePrice
+        +Employee creator
+        +Employee manager
+        +List<Ticket> tickets
+    }
+
+    class Ticket {
+        +Long ticketId
+        +LocalDateTime purchaseDate
+        +boolean statusUsed
+        +Long basePrice
+        +Long finalPrice
+        +Event event
+        +Customer customer
+    }
+
+    class Notification {
+        +Long id
+        +User recipient
+        +String message
+        +LocalDateTime createdAt
+        +boolean isRead
+        +String notificationType
+    }
+
+    class Role {
+        +Long id
+        +Roles name
+        +getAuthority()
+    }
+
+    class Voucher {
+        +Long voucherId
+        +long amount
+        +String code
+        +LocalDateTime dateValidUntil
+        +Customer customer
+    }
+
+    User <|-- Customer
+    User <|-- Employee
+    User "1" -- "*" Role
+    Customer "1" -- "*" Voucher
+    Customer "1" -- "*" Ticket
+    Employee "1" -- "*" Event : creates
+    Employee "1" -- "*" Event : manages
+    Event "1" -- "*" Ticket
+    User "1" -- "*" Notification
