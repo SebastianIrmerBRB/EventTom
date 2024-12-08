@@ -1,20 +1,19 @@
-package API.EventTom.services;
+package API.EventTom.services.user;
 
 import API.EventTom.DTO.EmployeeDTO;
 import API.EventTom.mappers.StandardDTOMapper;
 import API.EventTom.models.Employee;
 import API.EventTom.repositories.EmployeeRepository;
-import API.EventTom.services.interfaces.IEmployeeService;
+import API.EventTom.services.user.interfaces.IEmployeeService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class EmployeeService implements IEmployeeService {
+public class EmployeeServiceImpl implements IEmployeeService {
 
     EmployeeRepository employeeRepository;
     StandardDTOMapper standardDTOMapper;

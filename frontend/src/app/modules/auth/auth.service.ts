@@ -1,64 +1,34 @@
-// src/app/core/services/auth.service.ts
+// src/app/core/services/authentication.service.ts
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { BehaviorSubject, Observable, tap } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
-export interface SignUpRequest {
-  email: string;
-  password: string;
-  firstName: string;
-  lastName: string;
-}
-
-export interface AuthResponse {
-  id: number;
-  email: string;
-  role: string;
-  message: string;
-}
+import { environment } from '../../../environments/environment';
+import {AuthStoreService} from "./auth-store.service";
+import {AuthResponse, LoginRequest} from "./interfaces";
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  private currentUserSubject = new BehaviorSubject<AuthResponse | null>(null);
-  public currentUser$ = this.currentUserSubject.asObservable();
-
+export class AuthenticationService {
   private readonly API_URL = `http://localhost:8080/api/auth`;
 
-  constructor(private http: HttpClient) {
-    const savedUser = localStorage.getItem('currentUser');
-    if (savedUser) {
-      this.currentUserSubject.next(JSON.parse(savedUser));
-    }
-  }
+  constructor(
+    private http: HttpClient,
+    private authStore: AuthStoreService
+  ) {}
 
-  signUp(signUpData: SignUpRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/register`, signUpData)
+  login(credentials: LoginRequest): Observable<AuthResponse> {
+    return this.http.post<AuthResponse>(`${this.API_URL}/login`, credentials)
       .pipe(
-        tap(response => {
-          this.currentUserSubject.next(response);
-          localStorage.setItem('currentUser', JSON.stringify(response));
-        })
+        tap(response => this.authStore.setCurrentUser(response))
       );
   }
 
-  signIn(email: string, password: string): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(`${this.API_URL}/login`, { email, password })
+  logout(): Observable<void> {
+    return this.http.post<void>(`${this.API_URL}/logout`, {})
       .pipe(
-        tap(response => {
-          this.currentUserSubject.next(response);
-          localStorage.setItem('currentUser', JSON.stringify(response));
-        })
+        tap(() => this.authStore.setCurrentUser(null))
       );
-  }
-
-  signOut(): void {
-    localStorage.removeItem('currentUser');
-    this.currentUserSubject.next(null);
-  }
-
-  get currentUser(): AuthResponse | null {
-    return this.currentUserSubject.value;
   }
 }

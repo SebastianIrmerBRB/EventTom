@@ -11,7 +11,7 @@ import {
 } from '@angular/forms';
 import { ButtonComponent } from 'src/app/shared/components/button/button.component';
 import { CommonModule } from '@angular/common';
-import {AuthService} from "../../auth.service";
+import {RegistrationService} from "../../registration.service";
 
 @Component({
   selector: 'app-sign-up',
@@ -29,7 +29,7 @@ export class SignUpComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private authService: AuthService,
+    private registrationService: RegistrationService,
     private router: Router
   ) {
     this.signUpForm = this.fb.nonNullable.group({
@@ -92,7 +92,7 @@ export class SignUpComponent implements OnInit {
       lastName: '123'
     };
 
-    this.authService.signUp(signUpData).subscribe({
+    this.registrationService.registerCustomer(signUpData).subscribe({
       next: () => {
         this.router.navigate(['/dashboard']).then(r => {});
       },

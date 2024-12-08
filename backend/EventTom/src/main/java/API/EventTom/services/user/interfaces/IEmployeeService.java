@@ -1,4 +1,4 @@
-package API.EventTom.services.interfaces;
+package API.EventTom.services.user.interfaces;
 
 import API.EventTom.DTO.EmployeeDTO;
 

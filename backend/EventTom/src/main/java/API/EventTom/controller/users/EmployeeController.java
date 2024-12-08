@@ -1,13 +1,9 @@
-package API.EventTom.controller;
+package API.EventTom.controller.users;
 
-import API.EventTom.DTO.CustomerDTO;
 import API.EventTom.DTO.EmployeeDTO;
-import API.EventTom.DTO.EventDTO;
-import API.EventTom.services.interfaces.IEmployeeService;
+import API.EventTom.services.user.interfaces.IEmployeeService;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

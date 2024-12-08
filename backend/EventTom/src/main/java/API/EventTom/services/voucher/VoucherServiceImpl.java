@@ -1,11 +1,10 @@
-package API.EventTom.services;
+package API.EventTom.services.voucher;
 
 
 import API.EventTom.DTO.VoucherDTO;
 import API.EventTom.mappers.StandardDTOMapper;
 import API.EventTom.models.Voucher;
 import API.EventTom.repositories.VoucherRepository;
-import API.EventTom.services.interfaces.IVoucherService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class VoucherService implements IVoucherService {
+public class VoucherServiceImpl implements IVoucherService {
 
     VoucherRepository voucherRepository;
     StandardDTOMapper standardDTOMapper;

@@ -1,4 +1,4 @@
-package API.EventTom.services.interfaces;
+package API.EventTom.services.event;
 
 
 import API.EventTom.DTO.EventDTO;

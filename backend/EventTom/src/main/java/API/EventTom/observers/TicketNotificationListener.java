@@ -2,7 +2,7 @@ package API.EventTom.observers;
 
 import API.EventTom.models.Roles;
 import API.EventTom.repositories.EmployeeRepository;
-import API.EventTom.services.interfaces.INotificationService;
+import API.EventTom.services.notification.INotificationService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;

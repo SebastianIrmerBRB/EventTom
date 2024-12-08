@@ -1,10 +1,9 @@
-package API.EventTom.services;
+package API.EventTom.services.notification;
 
 import API.EventTom.models.Notification;
 import API.EventTom.models.User;
 import API.EventTom.repositories.NotificationRepository;
 import API.EventTom.repositories.UserRepository;
-import API.EventTom.services.interfaces.INotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,7 +13,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class WebsiteNotificationService implements INotificationService {
+public class WebsiteNotificationServiceImpl implements INotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository personRepository;
 

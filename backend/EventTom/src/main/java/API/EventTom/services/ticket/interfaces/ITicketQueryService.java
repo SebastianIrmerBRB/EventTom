@@ -1,15 +1,13 @@
-package API.EventTom.services.interfaces;
+package API.EventTom.services.ticket.interfaces;
 
 import API.EventTom.DTO.TicketDTO;
-import API.EventTom.DTO.request.PurchaseTicketDTO;
 
 import java.util.List;
 
-public interface ITicketService {
+public interface ITicketQueryService {
 
     List<TicketDTO> getTicketsByEventId(Long id);
     List<TicketDTO> getTicketsByCustomerId(String customerId);
     TicketDTO getTicketById(long ticketId);
 
-    void purchaseTicket(PurchaseTicketDTO purchaseTicketDTO);
 }

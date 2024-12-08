@@ -1,10 +1,9 @@
-package API.EventTom.services;
+package API.EventTom.services.event;
 
 import API.EventTom.DTO.EventDTO;
 import API.EventTom.mappers.StandardDTOMapper;
 import API.EventTom.models.Event;
 import API.EventTom.repositories.EventRepository;
-import API.EventTom.services.interfaces.IEventService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,7 +12,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class EventService implements IEventService {
+public class EventServiceImpl implements IEventService {
 
     EventRepository eventRepository;
     StandardDTOMapper standardDTOMapper;

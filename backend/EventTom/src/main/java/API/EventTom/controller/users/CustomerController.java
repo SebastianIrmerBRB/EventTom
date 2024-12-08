@@ -1,10 +1,9 @@
-package API.EventTom.controller;
+package API.EventTom.controller.users;
 
 import API.EventTom.DTO.CustomerDTO;
-import API.EventTom.services.interfaces.ICustomerService;
+import API.EventTom.services.user.interfaces.ICustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/customers")  // Changed to plural form as per REST conventions
+@RequestMapping("/api/customers")
 @AllArgsConstructor
 public class CustomerController {
     ICustomerService customerService;

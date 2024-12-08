@@ -1,4 +1,4 @@
-package API.EventTom.services;
+package API.EventTom.services.user;
 
 
 import API.EventTom.repositories.UserRepository;
@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 

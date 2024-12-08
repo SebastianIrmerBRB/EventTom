@@ -1,7 +1,7 @@
 package API.EventTom.controller;
 
 import API.EventTom.models.Notification;
-import API.EventTom.services.WebsiteNotificationService;
+import API.EventTom.services.notification.WebsiteNotificationServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @CrossOrigin(origins = "*") // Only for prototyping! Remove in production
 public class NotificationController {
-    private final WebsiteNotificationService notificationService;
+    private final WebsiteNotificationServiceImpl notificationService;
     // No Auth Principal --> Prototyping
     @GetMapping("/unread/{personId}")
     public ResponseEntity<List<Notification>> getUnreadNotifications(@PathVariable Long personId) {

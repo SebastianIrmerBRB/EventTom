@@ -63,6 +63,7 @@ public class SecurityConfig {
                 .authenticationProvider(authenticationProvider())
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/registration/**").permitAll()
                         .requestMatchers("/api/customers").permitAll()
                         .requestMatchers("/api/customers/{id}").permitAll()
                         // .requestMatchers("/api/employee/**").hasRole("ADMINISTRATOR")  // Added Administrator role requirement

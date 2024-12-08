@@ -1,4 +1,4 @@
-package API.EventTom.services.interfaces;
+package API.EventTom.services.notification;
 
 import API.EventTom.models.User;
 
