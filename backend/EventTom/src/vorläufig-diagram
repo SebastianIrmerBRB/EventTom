@@ -60,48 +60,9 @@ classDiagram
     }
 
     class VoucherController {
-        -IVoucherService voucherService
+        -IVoucherQueryService voucherService
         +getCustomerVouchers(String) ResponseEntity~List~VoucherDTO~~
         +getVoucher(long) ResponseEntity~VoucherDTO~
-    }
-
-    class CustomerRepository {
-        <<interface>>
-        +findCustomerByCustomerNumber(String) Optional~Customer~
-    }
-    class EmployeeRepository {
-        <<interface>>
-        +findEmployeeByEmployeeNumber(String) Optional~Employee~
-        +findByRoleAndEvent(Roles, Event) List~Employee~
-    }
-    class EventRepository {
-        <<interface>>
-        +findAll() List~Event~
-        +findById(Long) Optional~Event~
-    }
-    class NotificationRepository {
-        <<interface>>
-        +findByRecipientAndIsReadOrderByCreatedAtDesc(User, boolean) List~Notification~
-        +findByRecipientOrderByCreatedAtDesc(User) List~Notification~
-        +markAllAsRead(User) void
-    }
-    class RoleRepository {
-        <<interface>>
-        +findByName(Roles) Optional~Role~
-    }
-    class TicketRepository {
-        <<interface>>
-        +findAllTicketsByCustomerNumber(String) List~Ticket~
-        +findAllByEventId(Long) List~Ticket~
-    }
-    class UserRepository {
-        <<interface>>
-        +findByEmail(String) Optional~User~
-    }
-
-    class VoucherRepository {
-        <<interface>>
-        +findAllVouchersByCustomerNumber(String) List~Voucher~
     }
 
     %% Observers
@@ -123,20 +84,10 @@ classDiagram
     }
 
     %% Services
-    class IVoucherService {
+    class IVoucherQueryService {
         <<interface>>
         +getVouchersByCustomerId(String) List~VoucherDTO~
         +getVoucherById(long) VoucherDTO
-    }
-
-    class INotificationService {
-        <<interface>>
-        +notifyUser(User, String, String) void
-    }
-
-    class WebsiteNotificationServiceImpl {
-        -NotificationRepository notificationRepository
-        -UserRepository personRepository
     }
 
     class IEventService {
@@ -150,7 +101,7 @@ classDiagram
         -StandardDTOMapper standardDTOMapper
     }
 
-    class IVoucherService {
+    class IVoucherQueryService {
         <<interface>>
         +getVouchersByCustomerId(String customerId) List~VoucherDTO~
         +getVoucherById(long voucherId) VoucherDTO
@@ -328,7 +279,12 @@ classDiagram
         +mapTicketToTicketDTO(Ticket) TicketDTO
     }
 
-
+    class VoucherQueryServiceImpl {
+        -VoucherRepository voucherRepository
+        -StandardDTOMapper standardDTOMapper
+        +getVouchersByCustomerId(String customerId) List~VoucherDTO~
+        +getVoucherById(long voucherId) VoucherDTO
+    }
 AuthenticationController "1" *--> "authenticationService 1" IAuthenticationService
 AuthenticationServiceImpl  ..>  IAuthenticationService
 CustomerController "1" *--> "customerService 1" ICustomerService
@@ -356,8 +312,8 @@ TicketPurchaseServiceImpl  ..>  TicketPurchaseEvent : «create»
 TicketQueryController "1" *--> "ticketQueryService 1" ITicketQueryService
 TicketQueryServiceImpl  ..>  ITicketQueryService
 TicketQueryServiceImpl "1" *--> "standardDTOMapper 1" StandardDTOMapper
-VoucherController "1" *--> "voucherService 1" IVoucherService
-VoucherServiceImpl  ..>  IVoucherService
-VoucherServiceImpl "1" *--> "standardDTOMapper 1" StandardDTOMapper
+VoucherController "1" *--> "voucherService 1" IVoucherQueryService
+VoucherQueryServiceImpl  ..>  IVoucherQueryService
+VoucherQueryServiceImpl "1" *--> "standardDTOMapper 1" StandardDTOMapper
 VoucherValidator  ..>  IVoucherValidator
 WebsiteNotificationServiceImpl  ..>  INotificationService

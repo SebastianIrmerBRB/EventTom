@@ -13,7 +13,7 @@
 
     @Service
     @AllArgsConstructor
-    public class VoucherServiceImpl implements IVoucherService {
+    public class VoucherQueryServiceImpl implements IVoucherQueryService {
 
         VoucherRepository voucherRepository;
         StandardDTOMapper standardDTOMapper;

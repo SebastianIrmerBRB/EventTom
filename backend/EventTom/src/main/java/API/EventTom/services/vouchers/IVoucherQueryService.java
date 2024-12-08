@@ -4,7 +4,7 @@ import API.EventTom.DTO.VoucherDTO;
 
 import java.util.List;
 
-public interface IVoucherService {
+public interface IVoucherQueryService {
 
     List<VoucherDTO> getVouchersByCustomerId(String customerId);
     VoucherDTO getVoucherById(long voucherId);

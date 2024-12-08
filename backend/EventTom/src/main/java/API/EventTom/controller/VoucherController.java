@@ -2,7 +2,7 @@ package API.EventTom.controller;
 
 
 import API.EventTom.DTO.VoucherDTO;
-import API.EventTom.services.vouchers.IVoucherService;
+import API.EventTom.services.vouchers.IVoucherQueryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @RequestMapping("api/vouchers")
 public class VoucherController {
-    IVoucherService voucherService;
+    IVoucherQueryService voucherService;
     // TODO: WRITE DTO FOR EACH REQUEST
     @GetMapping("/customer/{customerId}")  // Better path for customer-specific vouchers
     public ResponseEntity<List<VoucherDTO>> getCustomerVouchers(@PathVariable String customerId) {
