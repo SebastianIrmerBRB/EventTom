@@ -23,6 +23,7 @@ graph TB
             dispatcher[DispatcherServlet]
             cors[CORS Filter]
             security[Spring Security]
+            jwt[JWT Validator]
         end
 
         subgraph ApplicationLayer ["Application Layer"]
@@ -48,9 +49,11 @@ graph TB
     vuex <-->|HTTP Request| router
 
     %% Frontend to Backend Communication
-    router -->|Header + JSON| cors
+    router -->|Bearer Token + JSON| cors
     cors -->|Add CORS Headers| security
-    security -->|Authenticated Request| dispatcher
+    security -->|Validate Token| jwt
+    jwt -.->|Revocation Check| entity
+    jwt -->|Validated Request| dispatcher
     dispatcher -->|Request + JSON| controller
 
     %% Response Flow
@@ -62,9 +65,6 @@ graph TB
     service <-->|Business Logic| repository
     repository <-->|Entity Objects| entity
     entity <-->|Data Access| mysql
-
-    %% Security Layer
-    security -->|JWT/Auth Validation| controller
 
     %% Support Services
     validation -.->|Validates| ApplicationLayer
@@ -79,9 +79,11 @@ graph TB
     classDef database fill:#ff6b6b,stroke:#fff,stroke-width:2px,color:white
     classDef domain fill:#ffd700,stroke:#fff,stroke-width:2px,color:black
     classDef model fill:#9370db,stroke:#fff,stroke-width:2px,color:white
+    classDef jwt fill:#ff9800,stroke:#fff,stroke-width:2px,color:white
 
     class browser,components,vuex,router vue
     class dispatcher,cors,security spring
+    class jwt,tokenCache jwt
     class controller,service,repository primary
     class jpa,web,lombok,validation secondary
     class mysql database
