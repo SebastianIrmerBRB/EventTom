@@ -1,84 +1,83 @@
 classDiagram
-    class User {
-        +Long id
-        +String firstName
-        +String lastName
-        +String email
-        +String password
-        +Set<Role> roles
-        +boolean enabled
-        +getAuthorities()
-        +getUsername()
+    direction BT
+
+    class customer {
+        datetime(6) created_at
+        varchar(255) customer_number
+        datetime(6) updated_at
+        bigint id
     }
 
-    class Customer {
-        +String customerNumber
-        +LocalDateTime createdAt
-        +LocalDateTime updatedAt
-        +List<Voucher> vouchers
-        +List<Ticket> tickets
+    class employee {
+        datetime(6) created_at
+        varchar(255) employee_number
+        datetime(6) updated_at
+        bigint id
     }
 
-    class Employee {
-        +String employeeNumber
-        +LocalDateTime createdAt
-        +LocalDateTime updatedAt
-        +List<Event> createdEvents
-        +List<Event> managedEvents
+    class event {
+        bigint base_price
+        datetime(6) date
+        bigint threshold_value
+        varchar(255) title
+        bigint sold_tickets
+        bigint total_tickets
+        bigint creator_id
+        bigint manager_id
+        bigint event_id
     }
 
-    class Event {
-        +Long eventId
-        +String title
-        +LocalDateTime dateOfEvent
-        +long totalTickets
-        +long totalSoldTickets
-        +long thresholdValue
-        +long basePrice
-        +Employee creator
-        +Employee manager
-        +List<Ticket> tickets
+    class notification {
+        datetime(6) created_at
+        bit(1) is_read
+        varchar(255) message
+        varchar(255) notification_type
+        bigint recipient_id
+        bigint id
     }
 
-    class Ticket {
-        +Long ticketId
-        +LocalDateTime purchaseDate
-        +boolean statusUsed
-        +Long basePrice
-        +Long finalPrice
-        +Event event
-        +Customer customer
+    class roles {
+        enum name
+        bigint id
     }
 
-    class Notification {
-        +Long id
-        +User recipient
-        +String message
-        +LocalDateTime createdAt
-        +boolean isRead
-        +String notificationType
+    class ticket {
+        bigint base_price
+        datetime(6) purchase_date
+        bit(1) status_used
+        bigint customer_id
+        bigint event_id
+        bigint ticket_id
     }
 
-    class Role {
-        +Long id
-        +Roles name
-        +getAuthority()
+    class user_roles {
+        bigint user_id
+        bigint role_id
     }
 
-    class Voucher {
-        +Long voucherId
-        +long amount
-        +String code
-        +LocalDateTime dateValidUntil
-        +Customer customer
+    class users {
+        varchar(255) email
+        bit(1) enabled
+        varchar(255) first_name
+        varchar(255) last_name
+        varchar(255) password
+        bigint id
     }
 
-    User <|-- Customer
-    User <|-- Employee
-    User "1" -- "*" Role
-    Customer "1" -- "*" Voucher
-    Customer "1" -- "*" Ticket
-    Employee "1" -- "*" Event : creates
-    Employee "1" -- "*" Event : manages
-    Event "1" -- "*" Ticket
-    User "1" -- "*" Notification
+    class voucher {
+        bigint amount
+        datetime(6) date_valid_until
+        bigint customer_id
+        bigint voucher_id
+    }
+
+    customer --> users
+    employee --> users
+    event --> employee : creator
+    event --> employee : manager
+    notification --> users : recipient
+    ticket --> customer
+    ticket --> event
+    user_roles --> roles
+    user_roles --> users
+    voucher --> customer

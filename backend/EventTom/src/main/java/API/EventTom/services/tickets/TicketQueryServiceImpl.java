@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class TicketServiceImpl implements ITicketQueryService {
+public class TicketQueryServiceImpl implements ITicketQueryService {
 
     TicketRepository ticketRepository;
     StandardDTOMapper standardDTOMapper;

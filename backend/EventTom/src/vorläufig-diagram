@@ -59,15 +59,6 @@ classDiagram
         +markAllAsRead(Long) ResponseEntity~Void~
     }
 
-    class TicketController {
-        -ITicketPurchaseService ticketPurchaseService
-        -ITicketQueryService ticketQueryService
-        +getEventTickets(Long) ResponseEntity~List~TicketDTO~~
-        +getCustomerTickets(String) ResponseEntity~List~TicketDTO~~
-        +getTicketById(long) ResponseEntity~TicketDTO~
-        +purchaseTicket(PurchaseTicketDTO) ResponseEntity~Void~
-    }
-
     class VoucherController {
         -IVoucherService voucherService
         +getCustomerVouchers(String) ResponseEntity~List~VoucherDTO~~
@@ -285,15 +276,88 @@ classDiagram
         +getAllEvents() List~EventDTO~
         +getEventById(long id) EventDTO
     }
+        class ITicketPurchaseService {
+        <<interface>>
+        +purchaseTicket(PurchaseTicketDTO) void
+    }
 
-    AuthenticationServiceImpl ..|> IAuthenticationService
-    CustomerServiceImpl ..|> ICustomerService
-    EmployeeServiceImpl ..|> IEmployeeService
-    RoleManagementServiceImpl ..|> IRoleManagementService
-    RegistrationServiceImpl ..|> IRegistrationService
-    WebsiteNotificationServiceImpl ..|> INotificationService
-    EventServiceImpl ..|> IEventService
-    Voucher --> Customer
+    class TicketPurchaseServiceImpl {
+        -EventRepository eventRepository
+        -CustomerRepository customerRepository
+        -TicketRepository ticketRepository
+        -ApplicationEventPublisher eventPublisher
+        -IVoucherValidator voucherValidator
+        +purchaseTicket(PurchaseTicketDTO) void
+        -createTicket(Event, Customer, long) Ticket
+        -updateEventTicketCount(Event) void
+        -publishTicketPurchaseEvent(Ticket, Event) void
+    }
 
-    RegistrationServiceImpl --> UserNumberGenerator
-    RegistrationServiceImpl --> IRoleManagementService
+    class ITicketQueryService {
+        <<interface>>
+        +getTicketsByEventId(Long) List~TicketDTO~
+        +getTicketsByCustomerId(String) List~TicketDTO~
+        +getTicketById(long) TicketDTO
+    }
+
+    class TicketQueryServiceImpl {
+        -TicketRepository ticketRepository
+        -StandardDTOMapper standardDTOMapper
+        -EventRepository eventRepository
+        -CustomerRepository customerRepository
+        +getTicketsByEventId(Long) List~TicketDTO~
+        +getTicketsByCustomerId(String) List~TicketDTO~
+        +getTicketById(long) TicketDTO
+    }
+    class TicketCommandController {
+        -ITicketPurchaseService ticketPurchaseService
+        +purchaseTicket(PurchaseTicketDTO) ResponseEntity~Void~
+    }
+
+    class TicketQueryController {
+        -ITicketQueryService ticketQueryService
+        +getEventTickets(Long) ResponseEntity~List~TicketDTO~~
+        +getCustomerTickets(String) ResponseEntity~List~TicketDTO~~
+        +getTicketById(long) ResponseEntity~TicketDTO~
+    }
+    class StandardDTOMapper {
+        +mapCustomerToCustomerDTO(Customer) CustomerDTO
+        +mapEmployeeToEmployeeDTO(Employee) EmployeeDTO
+        +mapEventToEventDTO(Event) EventDTO
+        +mapVoucherToVoucherDTO(Voucher) VoucherDTO
+        +mapTicketToTicketDTO(Ticket) TicketDTO
+    }
+
+
+AuthenticationController "1" *--> "authenticationService 1" IAuthenticationService
+AuthenticationServiceImpl  ..>  IAuthenticationService
+CustomerController "1" *--> "customerService 1" ICustomerService
+CustomerServiceImpl  ..>  ICustomerService
+CustomerServiceImpl "1" *--> "standardDTOMapper 1" StandardDTOMapper
+EmployeeController "1" *--> "employeeService 1" IEmployeeService
+EmployeeServiceImpl  ..>  IEmployeeService
+EmployeeServiceImpl "1" *--> "standardDTOMapper 1" StandardDTOMapper
+EventController "1" *--> "eventService 1" IEventService
+EventServiceImpl  ..>  IEventService
+EventServiceImpl "1" *--> "standardDTOMapper 1" StandardDTOMapper
+NotificationController "1" *--> "notificationService 1" WebsiteNotificationServiceImpl
+RegistrationController "1" *--> "registrationService 1" IRegistrationService
+RegistrationServiceImpl  ..>  IRegistrationService
+RegistrationServiceImpl "1" *--> "roleManagementService 1" IRoleManagementService
+RegistrationServiceImpl "1" *--> "userNumberGenerator 1" UserNumberGenerator
+RoleManagementController "1" *--> "roleManagementService 1" IRoleManagementService
+RoleManagementServiceImpl  ..>  IRoleManagementService
+TicketCommandController "1" *--> "ticketPurchaseService 1" ITicketPurchaseService
+TicketNotificationListener "1" *--> "notificationService 1" INotificationService
+TicketNotificationListener  ..>  TicketPurchaseEvent
+TicketPurchaseServiceImpl  ..>  ITicketPurchaseService
+TicketPurchaseServiceImpl "1" *--> "voucherValidator 1" IVoucherValidator
+TicketPurchaseServiceImpl  ..>  TicketPurchaseEvent : «create»
+TicketQueryController "1" *--> "ticketQueryService 1" ITicketQueryService
+TicketQueryServiceImpl  ..>  ITicketQueryService
+TicketQueryServiceImpl "1" *--> "standardDTOMapper 1" StandardDTOMapper
+VoucherController "1" *--> "voucherService 1" IVoucherService
+VoucherServiceImpl  ..>  IVoucherService
+VoucherServiceImpl "1" *--> "standardDTOMapper 1" StandardDTOMapper
+VoucherValidator  ..>  IVoucherValidator
+WebsiteNotificationServiceImpl  ..>  INotificationService
