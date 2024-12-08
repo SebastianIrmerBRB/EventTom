@@ -48,8 +48,9 @@ graph TB
     vuex <-->|HTTP Request| router
 
     %% Frontend to Backend Communication
-    router <-->|Header + JSON| cors
-    cors -->|Validated Request| dispatcher
+    router -->|Header + JSON| cors
+    cors -->|Add CORS Headers| security
+    security -->|Authenticated Request| dispatcher
     dispatcher -->|Request + JSON| controller
 
     %% Response Flow
@@ -63,8 +64,7 @@ graph TB
     entity <-->|Data Access| mysql
 
     %% Security Layer
-    security <-.->|JWT/Auth| cors
-    security <-.->|Secures| controller
+    security -->|JWT/Auth Validation| controller
 
     %% Support Services
     validation -.->|Validates| ApplicationLayer
