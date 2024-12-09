@@ -1,17 +1,20 @@
 package API.EventTom.models;
 
-
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Customer extends User {
+public class Customer{
+
+    @Id
+    private Long id;
+
     @Column(name = "customer_number", unique = true, nullable = false)
     private String customerNumber;
 
@@ -21,9 +24,12 @@ public class Customer extends User {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @OneToOne
+    @MapsId
+    private User user;
+
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Voucher> vouchers = new ArrayList<>();
-
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Ticket> tickets = new ArrayList<>();
 
@@ -36,7 +42,6 @@ public class Customer extends User {
 
     @Override
     public String toString() {
-        return String.format("Customer[id=%d, customerNumber='%s', name='%s']",
-                getId(), getCustomerNumber(), getFirstName());
+        return String.format("Customer[id=%d, customerNumber='%s', name='%s']", getId(), getCustomerNumber(), getUser().getFirstName());
     }
 }

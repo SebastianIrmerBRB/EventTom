@@ -13,6 +13,6 @@ import java.util.Optional;
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     Optional<Employee> findEmployeeByEmployeeNumber(String number);
 
-    @Query("SELECT e FROM Employee e JOIN e.roles r WHERE r.name = :role AND :event MEMBER OF e.managedEvents")
+    @Query("SELECT e FROM Employee e JOIN e.user.roles r WHERE r.name = :role AND :event MEMBER OF e.managedEvents")
     List<Employee> findByRoleAndEvent(@Param("role") Roles role, @Param("event") Event event);
 }

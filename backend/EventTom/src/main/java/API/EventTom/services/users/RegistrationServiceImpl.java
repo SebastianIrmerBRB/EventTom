@@ -33,9 +33,23 @@ public class RegistrationServiceImpl implements IRegistrationService {
     public ResponseEntity<?> registerCustomer(CustomerRegisterRequest request) {
         validateEmailUniqueness(request.getEmail());
 
-        Customer customer = createCustomer(request);
-        customer.setRoles(roleManagementService.getDefaultRoles());
-        User savedUser = customerRepository.save(customer);
+        // Create and save the base user first
+        User user = createBaseUser(request.getFirstName(), request.getLastName(),
+                request.getEmail(), request.getPassword());
+        user.setRoles(roleManagementService.getDefaultRoles());
+        User savedUser = userRepository.save(user);
+
+        // Create and save the customer profile
+        Customer customerProfile = new Customer();
+        customerProfile.setUser(savedUser);
+        customerProfile.setCustomerNumber(userNumberGenerator.generateCustomerNumber());
+        customerRepository.save(customerProfile);
+
+        // Create and save the employee profile
+        Employee employeeProfile = new Employee();
+        employeeProfile.setUser(savedUser);
+        employeeProfile.setEmployeeNumber(userNumberGenerator.generateEmployeeNumber());
+        employeeRepository.save(employeeProfile);
 
         return ResponseEntity.ok(createRegisterResponse(savedUser));
     }
@@ -45,11 +59,19 @@ public class RegistrationServiceImpl implements IRegistrationService {
     public ResponseEntity<?> registerEmployee(EmployeeRegisterRequest request) {
         validateEmailUniqueness(request.getEmail());
 
-        Employee employee = createEmployee(request);
-        employee.setRoles(roleManagementService.getRolesByNames(request.getRoles()));
-        Employee savedEmployee = employeeRepository.save(employee);
+        // Create and save the base user first
+        User user = createBaseUser(request.getFirstName(), request.getLastName(),
+                request.getEmail(), request.getPassword());
+        user.setRoles(roleManagementService.getRolesByNames(request.getRoles()));
+        User savedUser = userRepository.save(user);
 
-        return ResponseEntity.ok(createRegisterResponse(savedEmployee));
+        // Create and save the employee profile
+        Employee employeeProfile = new Employee();
+        employeeProfile.setUser(savedUser);
+        employeeProfile.setEmployeeNumber(userNumberGenerator.generateEmployeeNumber());
+        employeeRepository.save(employeeProfile);
+
+        return ResponseEntity.ok(createRegisterResponse(savedUser));
     }
 
     private void validateEmailUniqueness(String email) {
@@ -58,24 +80,14 @@ public class RegistrationServiceImpl implements IRegistrationService {
         }
     }
 
-    private Customer createCustomer(CustomerRegisterRequest request) {
-        Customer customer = new Customer();
-        customer.setFirstName(request.getFirstName());
-        customer.setLastName(request.getLastName());
-        customer.setEmail(request.getEmail());
-        customer.setPassword(passwordEncoder.encode(request.getPassword()));
-        customer.setCustomerNumber(userNumberGenerator.generateCustomerNumber());
-        return customer;
-    }
-
-    private Employee createEmployee(EmployeeRegisterRequest request) {
-        Employee employee = new Employee();
-        employee.setFirstName(request.getFirstName());
-        employee.setLastName(request.getLastName());
-        employee.setEmail(request.getEmail());
-        employee.setPassword(passwordEncoder.encode(request.getPassword()));
-        employee.setEmployeeNumber(userNumberGenerator.generateEmployeeNumber());
-        return employee;
+    private User createBaseUser(String firstName, String lastName, String email, String password) {
+        User user = new User();
+        user.setFirstName(firstName);
+        user.setLastName(lastName);
+        user.setEmail(email);
+        user.setPassword(passwordEncoder.encode(password));
+        user.setEnabled(true);
+        return user;
     }
 
     private RegisterResponse createRegisterResponse(User user) {
