@@ -8,10 +8,12 @@ import java.util.stream.Collectors;
 
 @Component
 public class StandardDTOMapper {
+
     public CustomerDTO mapCustomerToCustomerDTO(Customer customer) {
         CustomerDTO customerDTO = new CustomerDTO();
-        customerDTO.setName(customer.getFirstName() + " " + customer.getLastName());
-        customerDTO.setEmail(customer.getEmail());
+        User user = customer.getUser();
+        customerDTO.setName(user.getFirstName() + " " + user.getLastName());
+        customerDTO.setEmail(user.getEmail());
         customerDTO.setTickets(customer.getTickets().stream()
                 .map(this::mapTicketToTicketDTO)
                 .collect(Collectors.toList()));
@@ -19,17 +21,17 @@ public class StandardDTOMapper {
                 .map(this::mapVoucherToVoucherDTO)
                 .collect(Collectors.toList()));
         System.out.println(customerDTO);
-
         return customerDTO;
     }
 
     public EmployeeDTO mapEmployeeToEmployeeDTO(Employee employee) {
         EmployeeDTO employeeDTO = new EmployeeDTO();
-        employeeDTO.setEmail(employee.getEmail());
-        employeeDTO.setRoles(employee.getRoles().stream()
+        User user = employee.getUser();
+        employeeDTO.setEmail(user.getEmail());
+        employeeDTO.setRoles(user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet()));
-        employeeDTO.setName(employee.getFirstName() + " " + employee.getLastName());
+        employeeDTO.setName(user.getFirstName() + " " + user.getLastName());
         return employeeDTO;
     }
 
@@ -42,17 +44,19 @@ public class StandardDTOMapper {
         eventDTO.setDateOfEvent(event.getDateOfEvent());
         return eventDTO;
     }
+
     public VoucherDTO mapVoucherToVoucherDTO(Voucher voucher) {
         VoucherDTO voucherDTO = new VoucherDTO();
-        voucherDTO.setCustomerId(voucher.getCustomer().getId());
+        voucherDTO.setCustomerId(voucher.getCustomer().getUser().getId());
         voucherDTO.setAmount(voucher.getAmount());
         voucherDTO.setTicketValidUntil(voucher.getDateValidUntil());
         return voucherDTO;
     }
+
     public TicketDTO mapTicketToTicketDTO(Ticket ticket) {
         TicketDTO ticketDTO = new TicketDTO();
         ticketDTO.setFinalPrice(ticket.getBasePrice());
-        ticketDTO.setCustomerId(ticket.getCustomer().getId());
+        ticketDTO.setCustomerId(ticket.getCustomer().getUser().getId());
         ticketDTO.setStatusUsed(ticket.isStatusUsed());
         ticketDTO.setPurchaseDate(ticket.getPurchaseDate());
         ticketDTO.setEventId(ticket.getEvent().getEventId());

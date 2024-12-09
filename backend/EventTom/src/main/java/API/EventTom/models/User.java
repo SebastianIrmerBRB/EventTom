@@ -20,7 +20,6 @@ import java.util.*;
 @Entity
 @Getter
 @Setter
-@Inheritance(strategy = InheritanceType.JOINED)
 @Table(name = "users")
 public class User implements UserDetails {
     @Id
@@ -38,6 +37,11 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Customer customer;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Employee employee;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
