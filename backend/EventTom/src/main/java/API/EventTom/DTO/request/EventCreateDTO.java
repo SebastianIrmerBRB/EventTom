@@ -11,9 +11,11 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 public class EventCreateDTO {
     private String title;
+    private String location;
     private LocalDateTime dateOfEvent;
     private long totalTickets;
     private long thresholdValue;
     private long basePrice;
     private Long managerId;
+
 }

@@ -25,9 +25,9 @@ public class EventQueryController {
         return ResponseEntity.ok(eventQueryService.getEventById(id));
     }
 
-    @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<EventDTO>> getEventsByManager(@AuthenticatedUserId Long userId, @PathVariable long managerId) {
+    @GetMapping("/manager")
+    public ResponseEntity<List<EventDTO>> getEventsByManager(@AuthenticatedUserId Long userId) {
         // falls UserID hier gebraucht wird, kann einfach Annotation verwendet werden, damit die aus den UserDetails genommen wird.
-        return ResponseEntity.ok(eventQueryService.getEventsByManagerId(managerId));
+        return ResponseEntity.ok(eventQueryService.getEventsByManagerId(userId));
     }
 }

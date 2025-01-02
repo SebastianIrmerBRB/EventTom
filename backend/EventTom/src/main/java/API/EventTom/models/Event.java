@@ -23,8 +23,11 @@ public class Event {
     @Column(name = "title", nullable = false)
     private String title;
 
-    @Column(name = "date")
+    @Column(name = "date", nullable = false)
     private LocalDateTime dateOfEvent;
+
+    @Column(name = "location", nullable = false)
+    private String location;
 
     @Column(name = "total_tickets")
     private long totalTickets;
