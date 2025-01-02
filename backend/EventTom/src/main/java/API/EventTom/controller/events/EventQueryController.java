@@ -1,6 +1,7 @@
 package API.EventTom.controller.events;
 
 import API.EventTom.DTO.EventDTO;
+import API.EventTom.config.AuthenticatedUserId;
 import API.EventTom.services.events.IEventQueryService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,8 @@ public class EventQueryController {
     }
 
     @GetMapping("/manager/{managerId}")
-    public ResponseEntity<List<EventDTO>> getEventsByManager(@PathVariable long managerId) {
+    public ResponseEntity<List<EventDTO>> getEventsByManager(@AuthenticatedUserId Long userId, @PathVariable long managerId) {
+        // falls UserID hier gebraucht wird, kann einfach Annotation verwendet werden, damit die aus den UserDetails genommen wird.
         return ResponseEntity.ok(eventQueryService.getEventsByManagerId(managerId));
     }
 }

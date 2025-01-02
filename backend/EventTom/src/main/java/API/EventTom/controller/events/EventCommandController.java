@@ -2,6 +2,7 @@ package API.EventTom.controller.events;
 import API.EventTom.DTO.EventDTO;
 import API.EventTom.DTO.request.EventCreateDTO;
 import API.EventTom.DTO.request.EventUpdateDTO;
+import API.EventTom.config.AuthenticatedUserId;
 import API.EventTom.services.events.IEventCommandService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,8 +19,7 @@ public class EventCommandController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('EVENT_MANAGER')")
-    public ResponseEntity<EventDTO> createEvent(@RequestBody EventCreateDTO eventCreateDTO) {
-        System.out.println("test123");
+    public ResponseEntity<EventDTO> createEvent( @RequestBody EventCreateDTO eventCreateDTO) {
         return new ResponseEntity<>(eventCommandService.createEvent(eventCreateDTO), HttpStatus.CREATED);
     }
 

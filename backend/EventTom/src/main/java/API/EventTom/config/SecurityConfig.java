@@ -72,7 +72,15 @@ public class SecurityConfig implements WebMvcConfigurer  {
     public AuthTokenFilter authTokenFilter() {
         return new AuthTokenFilter();
     }
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(authenticatedUserIdArgumentResolver());
+    }
 
+    @Bean
+    public AuthenticatedUserIdArgumentResolver authenticatedUserIdArgumentResolver() {
+        return new AuthenticatedUserIdArgumentResolver();
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
