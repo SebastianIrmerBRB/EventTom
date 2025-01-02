@@ -16,19 +16,20 @@ import java.util.List;
 public class EventCommandController {
     private final IEventCommandService eventCommandService;
 
-    @PostMapping
+    @PostMapping("/create")
     @PreAuthorize("hasRole('EVENT_MANAGER')")
     public ResponseEntity<EventDTO> createEvent(@RequestBody EventCreateDTO eventCreateDTO) {
+        System.out.println("test123");
         return new ResponseEntity<>(eventCommandService.createEvent(eventCreateDTO), HttpStatus.CREATED);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('EVENT_MANAGER')")
     public ResponseEntity<EventDTO> updateEvent(@PathVariable long id, @RequestBody EventUpdateDTO eventUpdateDTO) {
         return ResponseEntity.ok(eventCommandService.updateEvent(id, eventUpdateDTO));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasRole('EVENT_MANAGER')")
     public ResponseEntity<Void> deleteEvent(@PathVariable long id) {
         eventCommandService.deleteEvent(id);

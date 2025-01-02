@@ -25,6 +25,6 @@ public class Role {
     }
 
     public String getAuthority() {
-        return name.getAuthority();
+        return "ROLE_" + name.getAuthority();
     }
 }

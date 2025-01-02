@@ -14,6 +14,7 @@ import javax.crypto.SecretKey;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class JwtUtils {
@@ -71,9 +72,13 @@ public class JwtUtils {
     }
 
     public String generateTokenFromEmailAndRoles(String email, List<String> roles) {
+        List<String> formattedRoles = roles.stream()
+                .map(role -> role.startsWith("ROLE_") ? role : "ROLE_" + role)
+                .toList();
+
         return Jwts.builder()
                 .subject(email)
-                .claim("roles", roles)
+                .claim("roles", formattedRoles)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(key())

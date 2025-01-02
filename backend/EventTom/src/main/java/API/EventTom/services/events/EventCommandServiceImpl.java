@@ -33,8 +33,8 @@ public class EventCommandServiceImpl implements IEventCommandService {
         event.setThresholdValue(eventCreateDTO.getThresholdValue());
         event.setBasePrice(eventCreateDTO.getBasePrice());
         event.setManager(manager);
-        event.setCreator(manager); // Assuming the manager is also the creator
-
+        event.setCreator(manager);
+        System.out.println(event);
         Event savedEvent = eventRepository.save(event);
         return standardDTOMapper.mapEventToEventDTO(savedEvent);
     }
