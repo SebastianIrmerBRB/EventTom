@@ -8,7 +8,6 @@ import lombok.EqualsAndHashCode;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-// Veränderung basierend auf: https://claude.ai/chat/0b79732a-0b0c-446f-8283-cb182582fd42
 
 @EqualsAndHashCode(callSuper = true)
 @Entity

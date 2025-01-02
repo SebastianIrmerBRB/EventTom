@@ -27,6 +27,12 @@ public abstract class UserProfile {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

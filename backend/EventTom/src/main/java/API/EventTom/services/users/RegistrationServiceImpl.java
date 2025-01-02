@@ -22,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class RegistrationServiceImpl implements IRegistrationService {
 
     private final UserRepository userRepository;
-    private final CustomerRepository customerRepository;
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserNumberGenerator userNumberGenerator;
@@ -33,19 +32,15 @@ public class RegistrationServiceImpl implements IRegistrationService {
     public ResponseEntity<?> registerCustomer(CustomerRegisterRequest request) {
         validateEmailUniqueness(request.getEmail());
 
-        // Create and save the base user first
+        // Create the user with its profile
         User user = createBaseUser(request.getFirstName(), request.getLastName(),
-                request.getEmail(), request.getPassword());
+                request.getEmail(), request.getPassword(), UserType.CUSTOMER);
         user.setRoles(roleManagementService.getDefaultRoles());
-        user.setUserType(UserType.CUSTOMER);
+
+        Customer customerProfile = (Customer) user.getUserProfile();
+        customerProfile.setCustomerNumber(userNumberGenerator.generateCustomerNumber());
 
         User savedUser = userRepository.save(user);
-
-        Customer customerProfile = new Customer();
-        customerProfile.setUser(savedUser);
-        user.setUserProfile(customerProfile);
-        customerProfile.setCustomerNumber(userNumberGenerator.generateCustomerNumber());
-        customerRepository.save(customerProfile);
 
         return ResponseEntity.ok(createRegisterResponse(savedUser));
     }
@@ -55,20 +50,19 @@ public class RegistrationServiceImpl implements IRegistrationService {
     public ResponseEntity<?> registerEmployee(EmployeeRegisterRequest request) {
         validateEmailUniqueness(request.getEmail());
 
-        // Create and save the base user first
         User user = createBaseUser(request.getFirstName(), request.getLastName(),
-                request.getEmail(), request.getPassword());
+                request.getEmail(), request.getPassword(), UserType.EMPLOYEE);
         user.setRoles(roleManagementService.getRolesByNames(request.getRoles()));
-        User savedUser = userRepository.save(user);
 
-        // Create and save the employee profile
-        Employee employeeProfile = new Employee();
-        employeeProfile.setUser(savedUser);
+        Employee employeeProfile = (Employee) user.getUserProfile();
         employeeProfile.setEmployeeNumber(userNumberGenerator.generateEmployeeNumber());
-        employeeRepository.save(employeeProfile);
+
+        // Save the user - cascade will save the profile
+        User savedUser = userRepository.save(user);
 
         return ResponseEntity.ok(createRegisterResponse(savedUser));
     }
+
 
     private void validateEmailUniqueness(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
@@ -76,13 +70,26 @@ public class RegistrationServiceImpl implements IRegistrationService {
         }
     }
 
-    private User createBaseUser(String firstName, String lastName, String email, String password) {
+    private User createBaseUser(String firstName, String lastName, String email, String password, UserType userType) {
+        // Create base user with auth details
         User user = new User();
-        user.setFirstName(firstName);
-        user.setLastName(lastName);
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setEnabled(true);
+        user.setUserType(userType);
+
+        UserProfile profile;
+        if (userType == UserType.CUSTOMER) {
+            profile = new Customer();
+        } else {
+            profile = new Employee();
+        }
+
+        profile.setUser(user);
+        profile.setFirstName(firstName);
+        profile.setLastName(lastName);
+        user.setUserProfile(profile);
+
         return user;
     }
 
