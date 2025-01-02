@@ -2,10 +2,13 @@ package API.EventTom.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.DynamicUpdate;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -34,8 +37,33 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
-    private UserProfile userProfile;
+
+    @CreatedDate
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @LastModifiedDate
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    @Column(name = "first_name", nullable = false)
+    private String firstName;
+
+    @Column(name = "last_name", nullable = false)
+    private String lastName;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+        validateRoles();
+
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
+        validateRoles();  // Call the validation logic from here
+    }
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -84,8 +112,6 @@ public class User implements UserDetails {
     @Column(name = "user_type", nullable = false)
     private UserType userType;
 
-    @PrePersist
-    @PreUpdate
     protected void validateRoles() {
         if (userType == UserType.CUSTOMER) {
             boolean hasEmployeeOnlyRoles = roles.stream()

@@ -12,7 +12,6 @@ import API.EventTom.services.users.interfaces.IRegistrationService;
 import API.EventTom.services.users.interfaces.IRoleManagementService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class RegistrationServiceImpl implements IRegistrationService {
 
     private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
     private final EmployeeRepository employeeRepository;
     private final PasswordEncoder passwordEncoder;
     private final UserNumberGenerator userNumberGenerator;
@@ -32,17 +32,19 @@ public class RegistrationServiceImpl implements IRegistrationService {
     public ResponseEntity<?> registerCustomer(CustomerRegisterRequest request) {
         validateEmailUniqueness(request.getEmail());
 
-        // Create the user with its profile
-        User user = createBaseUser(request.getFirstName(), request.getLastName(),
-                request.getEmail(), request.getPassword(), UserType.CUSTOMER);
+        User user = createBaseUser(request.getEmail(), request.getPassword(), request.getFirstName(), request.getLastName(), UserType.CUSTOMER);
         user.setRoles(roleManagementService.getDefaultRoles());
 
-        Customer customerProfile = (Customer) user.getUserProfile();
-        customerProfile.setCustomerNumber(userNumberGenerator.generateCustomerNumber());
+        Customer customer = new Customer();
+        customer.setUser(user);
 
-        User savedUser = userRepository.save(user);
+        customer.setCustomerNumber(userNumberGenerator.generateCustomerNumber());
 
-        return ResponseEntity.ok(createRegisterResponse(savedUser));
+        // Save user first
+        user = userRepository.save(user);
+        customer = customerRepository.save(customer);
+
+        return ResponseEntity.ok(createRegisterResponse(user));
     }
 
     @Override
@@ -50,19 +52,21 @@ public class RegistrationServiceImpl implements IRegistrationService {
     public ResponseEntity<?> registerEmployee(EmployeeRegisterRequest request) {
         validateEmailUniqueness(request.getEmail());
 
-        User user = createBaseUser(request.getFirstName(), request.getLastName(),
-                request.getEmail(), request.getPassword(), UserType.EMPLOYEE);
+        // Create and setup the user
+        User user = createBaseUser(request.getEmail(), request.getPassword(), request.getFirstName(), request.getLastName(), UserType.EMPLOYEE);
         user.setRoles(roleManagementService.getRolesByNames(request.getRoles()));
 
-        Employee employeeProfile = (Employee) user.getUserProfile();
-        employeeProfile.setEmployeeNumber(userNumberGenerator.generateEmployeeNumber());
+        // Create and setup the employee
+        Employee employee = new Employee();
+        employee.setUser(user);
+        employee.setEmployeeNumber(userNumberGenerator.generateEmployeeNumber());
 
-        // Save the user - cascade will save the profile
-        User savedUser = userRepository.save(user);
+        // Save both entities
+        user = userRepository.save(user);
+        employee = employeeRepository.save(employee);
 
-        return ResponseEntity.ok(createRegisterResponse(savedUser));
+        return ResponseEntity.ok(createRegisterResponse(user));
     }
-
 
     private void validateEmailUniqueness(String email) {
         if (userRepository.findByEmail(email).isPresent()) {
@@ -70,26 +74,14 @@ public class RegistrationServiceImpl implements IRegistrationService {
         }
     }
 
-    private User createBaseUser(String firstName, String lastName, String email, String password, UserType userType) {
-        // Create base user with auth details
+    private User createBaseUser(String email, String password, String firstname, String lastname, UserType userType) {
         User user = new User();
         user.setEmail(email);
         user.setPassword(passwordEncoder.encode(password));
         user.setEnabled(true);
         user.setUserType(userType);
-
-        UserProfile profile;
-        if (userType == UserType.CUSTOMER) {
-            profile = new Customer();
-        } else {
-            profile = new Employee();
-        }
-
-        profile.setUser(user);
-        profile.setFirstName(firstName);
-        profile.setLastName(lastName);
-        user.setUserProfile(profile);
-
+        user.setFirstName(firstname);
+        user.setLastName(lastname);
         return user;
     }
 

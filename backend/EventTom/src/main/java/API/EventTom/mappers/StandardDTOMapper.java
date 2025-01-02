@@ -12,7 +12,7 @@ public class StandardDTOMapper {
     public CustomerDTO mapCustomerToCustomerDTO(Customer customer) {
         CustomerDTO customerDTO = new CustomerDTO();
         User user = customer.getUser();
-        customerDTO.setName(user.getUserProfile().getFirstName() + " " + user.getUserProfile().getLastName());
+        customerDTO.setName(user.getFirstName() + " " + user.getLastName());
         customerDTO.setEmail(user.getEmail());
         customerDTO.setTickets(customer.getTickets().stream()
                 .map(this::mapTicketToTicketDTO)
@@ -31,7 +31,7 @@ public class StandardDTOMapper {
         employeeDTO.setRoles(user.getRoles().stream()
                 .map(Role::getName)
                 .collect(Collectors.toSet()));
-        employeeDTO.setName(user.getUserProfile().getFirstName() + " " + user.getUserProfile().getLastName());
+        employeeDTO.setName(user.getFirstName() + " " + user.getLastName());
         return employeeDTO;
     }
 

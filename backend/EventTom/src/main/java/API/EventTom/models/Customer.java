@@ -2,16 +2,28 @@ package API.EventTom.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@EqualsAndHashCode(callSuper = true)
 @Entity
 @Data
-public class Customer extends UserProfile {
+public class Customer {
+    @Id
+    private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @PrePersist
+    @PreUpdate
+    private void validateUserType() {
+        if (user.getUserType() != UserType.CUSTOMER) {
+            throw new IllegalStateException("User must be of type CUSTOMER");
+        }
+    }
 
     @Column(name = "customer_number", unique = true, nullable = false)
     private String customerNumber;
