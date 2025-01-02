@@ -6,6 +6,7 @@ import API.EventTom.models.*;
 import API.EventTom.repositories.RoleRepository;
 import API.EventTom.repositories.UserRepository;
 import API.EventTom.services.users.interfaces.IRoleManagementService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,12 +21,15 @@ public class RoleManagementServiceImpl implements IRoleManagementService {
 
     @Override
     @Transactional
-    public void assignRole(Long userId, Roles role) {
+    public void assignRole(Long userId, Roles roleName) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
-        Role roleEntity = getRoleByName(role);
-        user.getRoles().add(roleEntity);
+        Role role = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RoleNotFoundException("Role not found: " + roleName));
+
+        validateUserRoles(user);
+        user.addRole(role);
         userRepository.save(user);
     }
 
@@ -33,7 +37,9 @@ public class RoleManagementServiceImpl implements IRoleManagementService {
     @Transactional
     public void assignRoles(Long userId, Set<Roles> roles) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserNotFoundException("User not found"));
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        validateUserRoles(user);
 
         Set<Role> roleEntities = getRolesByNames(roles);
         user.setRoles(roleEntities);
@@ -41,8 +47,21 @@ public class RoleManagementServiceImpl implements IRoleManagementService {
     }
 
     @Override
-    public void removeRole(Long userId, Roles role) {
+    @Transactional
+    public void removeRole(Long userId, Roles roleName) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
 
+        Role roleToRemove = roleRepository.findByName(roleName)
+                .orElseThrow(() -> new RoleNotFoundException("Role not found: " + roleName));
+
+        if (user.getRoles().size() <= 1 && user.getRoles().contains(roleToRemove)) {
+            Role defaultRole = getRoleByName(Roles.NONE);
+            user.getRoles().add(defaultRole);
+        }
+
+        user.getRoles().remove(roleToRemove);
+        userRepository.save(user);
     }
 
     @Override
@@ -66,4 +85,28 @@ public class RoleManagementServiceImpl implements IRoleManagementService {
         return roleRepository.findByName(roleName)
                 .orElseThrow(() -> new RoleNotFoundException("Role not found: " + roleName));
     }
+
+    public void validateUserRoles(User user) {
+        if (user.getUserType() == UserType.CUSTOMER) {
+            Set<Role> invalidRoles = user.getRoles().stream()
+                    .filter(role -> Roles.isEmployeeOnly(role.getName()))
+                    .collect(Collectors.toSet());
+
+            if (!invalidRoles.isEmpty()) {
+                throw new IllegalStateException("Customer has invalid employee roles: " +
+                        invalidRoles.stream()
+                                .map(role -> role.getName().getDisplayName())
+                                .collect(Collectors.joining(", ")));
+            }
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Set<Role> getUserRoles(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId))
+                .getRoles();
+    }
+
 }

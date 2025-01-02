@@ -1,12 +1,19 @@
 package API.EventTom.models;
 
+import API.EventTom.config.EmployeeOnly;
 import lombok.Getter;
+
+import java.lang.reflect.Field;
 
 @Getter
 public enum Roles {
+    @EmployeeOnly
     EVENT_MANAGER("Event Manager"),
+    @EmployeeOnly
     EVENT_CREATOR("Event Creator"),
+    @EmployeeOnly
     SALES_REP("Sales Representative"),
+    @EmployeeOnly
     ADMINISTRATOR("Administrator"),
 
     NONE("No Role");
@@ -19,5 +26,14 @@ public enum Roles {
 
     public String getAuthority() {
         return this.name();
+    }
+
+    public static boolean isEmployeeOnly(Roles role) {
+        try {
+            Field field = Roles.class.getField(role.name());
+            return field.isAnnotationPresent(EmployeeOnly.class);
+        } catch (NoSuchFieldException e) {
+            return false;
+        }
     }
 }

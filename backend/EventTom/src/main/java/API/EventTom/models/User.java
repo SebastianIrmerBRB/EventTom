@@ -1,6 +1,7 @@
 package API.EventTom.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.DynamicUpdate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import java.util.*;
 @Getter
 @Setter
 @Table(name = "users")
+@DynamicUpdate
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,11 +40,8 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Customer customer;
-
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Employee employee;
+    @OneToOne(mappedBy = "user", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+    private UserProfile userProfile;
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
@@ -88,5 +87,28 @@ public class User implements UserDetails {
                 .map(Role::getName)
                 .min(Comparator.comparingInt(Enum::ordinal));
     }
+    @Enumerated(EnumType.STRING)
+    @Column(name = "user_type", nullable = false)
+    private UserType userType;
 
+    @PrePersist
+    @PreUpdate
+    protected void validateRoles() {
+        if (userType == UserType.CUSTOMER) {
+            boolean hasEmployeeOnlyRoles = roles.stream()
+                    .map(Role::getName)
+                    .anyMatch(Roles::isEmployeeOnly);
+
+            if (hasEmployeeOnlyRoles) {
+                throw new IllegalStateException("Customers cannot have employee-only roles");
+            }
+        }
+    }
+
+    public void addRole(Role role) {
+        if (userType == UserType.CUSTOMER && Roles.isEmployeeOnly(role.getName())) {
+            throw new IllegalStateException("Cannot assign employee-only role to a customer");
+        }
+        roles.add(role);
+    }
 }

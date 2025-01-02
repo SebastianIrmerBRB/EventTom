@@ -37,11 +37,13 @@ public class RegistrationServiceImpl implements IRegistrationService {
         User user = createBaseUser(request.getFirstName(), request.getLastName(),
                 request.getEmail(), request.getPassword());
         user.setRoles(roleManagementService.getDefaultRoles());
+        user.setUserType(UserType.CUSTOMER);
+
         User savedUser = userRepository.save(user);
 
-        // Create and save the customer profile
         Customer customerProfile = new Customer();
         customerProfile.setUser(savedUser);
+        user.setUserProfile(customerProfile);
         customerProfile.setCustomerNumber(userNumberGenerator.generateCustomerNumber());
         customerRepository.save(customerProfile);
 
