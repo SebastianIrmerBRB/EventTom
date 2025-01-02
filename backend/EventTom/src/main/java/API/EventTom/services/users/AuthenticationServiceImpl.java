@@ -43,6 +43,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         String jwt = jwtUtils.generateJwtToken(userDetails);
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
 
+        System.out.println(jwt);
+        System.out.println(refreshToken);
+
         response.addHeader("Set-Cookie", tokenCookieService.createJwtCookie(jwt).toString());
         response.addHeader("Set-Cookie", tokenCookieService.createRefreshTokenCookie(refreshToken.getToken()).toString());
 

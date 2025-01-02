@@ -45,12 +45,6 @@ public class RegistrationServiceImpl implements IRegistrationService {
         customerProfile.setCustomerNumber(userNumberGenerator.generateCustomerNumber());
         customerRepository.save(customerProfile);
 
-        // Create and save the employee profile
-        Employee employeeProfile = new Employee();
-        employeeProfile.setUser(savedUser);
-        employeeProfile.setEmployeeNumber(userNumberGenerator.generateEmployeeNumber());
-        employeeRepository.save(employeeProfile);
-
         return ResponseEntity.ok(createRegisterResponse(savedUser));
     }
 

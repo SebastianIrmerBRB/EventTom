@@ -82,11 +82,12 @@ public class SecurityConfig implements WebMvcConfigurer  {
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("**").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
+                        .requestMatchers("/api/auth/refreshtoken").permitAll()
                         .requestMatchers("/api/registration/**").permitAll()
                         .requestMatchers("/api/customers").permitAll()
                         // .requestMatchers("/api/customers/{id}").permitAll()
-                        // .anyRequest().authenticated()
+                        .anyRequest().authenticated()
                 );
                 http.authenticationProvider(authenticationProvider());
                 http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
