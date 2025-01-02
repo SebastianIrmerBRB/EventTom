@@ -45,11 +45,18 @@ public class GlobalExceptionHandler {
 
     }
 
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<ErrorMessageDTO> handleRuntimeException(RuntimeException e) {
+        return buildResponseEntity("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR, e);
+    }
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorMessageDTO> handleRuntimeException(IllegalArgumentException e) {
         return buildResponseEntity("An unexpected error occurred", HttpStatus.BAD_REQUEST, e);
     }
 
-
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorMessageDTO> handleException(Exception e) {
+        return buildResponseEntity("An unexpected error occurred", HttpStatus.INTERNAL_SERVER_ERROR, e);
+    }
 
 }
