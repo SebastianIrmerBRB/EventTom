@@ -24,8 +24,8 @@ public class EventCommandServiceImpl implements IEventCommandService {
     public EventDTO createEvent(EventCreateDTO eventCreateDTO) {
         Employee manager = employeeRepository.findById(eventCreateDTO.getManagerId())
                 .orElseThrow(() -> new ResourceNotFoundException("Manager not found"));
-
         Event event = new Event();
+
         event.setTitle(eventCreateDTO.getTitle());
         event.setDateOfEvent(eventCreateDTO.getDateOfEvent());
         event.setTotalTickets(eventCreateDTO.getTotalTickets());
@@ -34,7 +34,6 @@ public class EventCommandServiceImpl implements IEventCommandService {
         event.setBasePrice(eventCreateDTO.getBasePrice());
         event.setManager(manager);
         event.setCreator(manager);
-        System.out.println(event);
         Event savedEvent = eventRepository.save(event);
         return standardDTOMapper.mapEventToEventDTO(savedEvent);
     }
