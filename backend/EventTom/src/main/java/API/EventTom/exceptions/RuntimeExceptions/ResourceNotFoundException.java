@@ -1,0 +1,8 @@
+package API.EventTom.exceptions.RuntimeExceptions;
+
+
+public class ResourceNotFoundException extends RuntimeException {
+    public ResourceNotFoundException(String message) {
+        super(message);
+    }
+}

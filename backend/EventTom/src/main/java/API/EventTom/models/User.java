@@ -37,6 +37,7 @@ public class User implements UserDetails {
 
     @Column(nullable = false)
     private String password;
+
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
     private Customer customer;
 
@@ -87,4 +88,5 @@ public class User implements UserDetails {
                 .map(Role::getName)
                 .min(Comparator.comparingInt(Enum::ordinal));
     }
+
 }

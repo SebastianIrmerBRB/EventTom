@@ -1,6 +1,7 @@
 package API.EventTom.services.events;
 
 import API.EventTom.DTO.EventDTO;
+import API.EventTom.exceptions.RuntimeExceptions.ResourceNotFoundException;
 import API.EventTom.mappers.StandardDTOMapper;
 import API.EventTom.models.Event;
 import API.EventTom.repositories.EventRepository;
@@ -12,7 +13,7 @@ import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
-public class EventServiceImpl implements IEventService {
+public class EventQueryServiceImpl implements IEventQueryService {
 
     EventRepository eventRepository;
     StandardDTOMapper standardDTOMapper;
@@ -27,10 +28,15 @@ public class EventServiceImpl implements IEventService {
 
     @Override
     public EventDTO getEventById(long id) {
-        Event event = eventRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Event with ID could not be found"));
-        return standardDTOMapper.mapEventToEventDTO(event);
+        return eventRepository.findById(id)
+                .map(standardDTOMapper::mapEventToEventDTO)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found with id: " + id));
     }
 
-
+    @Override
+    public List<EventDTO> getEventsByManagerId(long managerId) {
+        return eventRepository.findByManagerId(managerId).stream()
+                .map(standardDTOMapper::mapEventToEventDTO)
+                .collect(Collectors.toList());
+    }
 }

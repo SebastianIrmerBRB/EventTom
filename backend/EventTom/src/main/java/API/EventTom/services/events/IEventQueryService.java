@@ -5,10 +5,10 @@ import API.EventTom.DTO.EventDTO;
 
 import java.util.List;
 
-public interface IEventService {
+public interface IEventQueryService {
 
 
     List<EventDTO> getAllEvents();
     EventDTO getEventById(long id);
-
+    List<EventDTO> getEventsByManagerId(long managerId);
 }
