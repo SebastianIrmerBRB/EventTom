@@ -92,12 +92,12 @@ public class SecurityConfig implements WebMvcConfigurer  {
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("**").permitAll()
+                        .requestMatchers("swagger-ui/**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/refreshtoken").permitAll()
                         .requestMatchers("/api/registration/**").permitAll()
                         .requestMatchers("/api/customers").permitAll()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 );
                 http.authenticationProvider(authenticationProvider());
                 http.addFilterBefore(authTokenFilter(), UsernamePasswordAuthenticationFilter.class);
