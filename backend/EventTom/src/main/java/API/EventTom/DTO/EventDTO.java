@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -15,6 +16,6 @@ public class EventDTO {
     public LocalDateTime dateOfEvent;
     public long soldTickets;
     public long thresholdValue;
-    public long basePrice;
+    public BigDecimal basePrice;
     public long location;
 }

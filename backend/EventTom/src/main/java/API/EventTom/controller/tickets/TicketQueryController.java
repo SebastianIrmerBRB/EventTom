@@ -3,13 +3,14 @@ package API.EventTom.controller.tickets;
 import API.EventTom.DTO.TicketDTO;
 import API.EventTom.services.tickets.interfaces.ITicketQueryService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 @RestController
-@AllArgsConstructor
 @RequestMapping("api/tickets/query")
+@RequiredArgsConstructor
 public class TicketQueryController {
     private final ITicketQueryService ticketQueryService;
 

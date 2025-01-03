@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/notifications")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*") // Only for prototyping! Remove in production
 public class NotificationController {
     private final WebsiteNotificationServiceImpl notificationService;
     // No Auth Principal --> Prototyping

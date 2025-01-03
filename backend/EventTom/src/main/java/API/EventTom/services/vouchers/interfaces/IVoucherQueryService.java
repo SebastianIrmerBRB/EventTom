@@ -1,4 +1,4 @@
-package API.EventTom.services.vouchers;
+package API.EventTom.services.vouchers.interfaces;
 
 import API.EventTom.DTO.VoucherDTO;
 

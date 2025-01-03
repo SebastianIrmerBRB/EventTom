@@ -92,6 +92,7 @@ public class SecurityConfig implements WebMvcConfigurer  {
                 })
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("**").permitAll()
                         .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/auth/refreshtoken").permitAll()
                         .requestMatchers("/api/registration/**").permitAll()

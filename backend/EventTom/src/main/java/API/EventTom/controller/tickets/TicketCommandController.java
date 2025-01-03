@@ -3,13 +3,14 @@ package API.EventTom.controller.tickets;
 import API.EventTom.DTO.request.PurchaseTicketDTO;
 import API.EventTom.services.tickets.interfaces.ITicketPurchaseService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
 @RestController
-@AllArgsConstructor
 @RequestMapping("api/tickets/command")
+@RequiredArgsConstructor
 public class TicketCommandController {
     private final ITicketPurchaseService ticketPurchaseService;
 

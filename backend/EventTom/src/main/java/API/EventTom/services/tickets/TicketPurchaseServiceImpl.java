@@ -11,7 +11,7 @@ import API.EventTom.repositories.CustomerRepository;
 import API.EventTom.repositories.EventRepository;
 import API.EventTom.repositories.TicketRepository;
 import API.EventTom.services.tickets.interfaces.ITicketPurchaseService;
-import API.EventTom.services.vouchers.IVoucherValidator;
+import API.EventTom.services.vouchers.interfaces.IVoucherValidationService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -27,7 +27,7 @@ public class TicketPurchaseServiceImpl implements ITicketPurchaseService {
     private final CustomerRepository customerRepository;
     private final TicketRepository ticketRepository;
     private final ApplicationEventPublisher eventPublisher;
-    private final IVoucherValidator voucherValidator;
+    private final IVoucherValidationService voucherValidator;
 
     @Override
     @Transactional
@@ -38,26 +38,8 @@ public class TicketPurchaseServiceImpl implements ITicketPurchaseService {
         Customer customer = customerRepository.findCustomerByCustomerNumber(purchaseTicketDTO.getCustomerNumber())
                 .orElseThrow(() -> new CustomerNotFoundException(purchaseTicketDTO.getCustomerNumber()));
 
-        // validate if ticket can be valid?
-
-        if (purchaseTicketDTO.getVoucherCode() != null) {
-            voucherValidator.validateVoucher(
-                    purchaseTicketDTO.getVoucherCode(),
-                    customer.getCustomerNumber(),
-                    event.getBasePrice()
-            );
-        }
-
-        long finalPrice = voucherValidator.calculateDiscountedAmount(
-                purchaseTicketDTO.getVoucherCode(),
-                event.getBasePrice()
-        );
-
-        Ticket ticket = createTicket(event, customer, finalPrice);
-        Ticket savedTicket = ticketRepository.save(ticket);
 
         updateEventTicketCount(event);
-        publishTicketPurchaseEvent(savedTicket, event);
     }
 
 
@@ -67,7 +49,6 @@ public class TicketPurchaseServiceImpl implements ITicketPurchaseService {
         ticket.setCustomer(customer);
         ticket.setPurchaseDate(LocalDateTime.now());
         ticket.setStatusUsed(false);
-        ticket.setFinalPrice(finalPrice);
         return ticket;
     }
 

@@ -4,7 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Data
@@ -28,8 +30,9 @@ public class Customer {
     @Column(name = "customer_number", unique = true, nullable = false)
     private String customerNumber;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Voucher> vouchers = new ArrayList<>();
+    @OneToMany(mappedBy = "customer")
+    private Set<Voucher> vouchers = new HashSet<>();
+
     @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Ticket> tickets = new ArrayList<>();
 

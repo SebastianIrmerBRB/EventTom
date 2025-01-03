@@ -5,6 +5,7 @@
     import API.EventTom.mappers.StandardDTOMapper;
     import API.EventTom.models.Voucher;
     import API.EventTom.repositories.VoucherRepository;
+    import API.EventTom.services.vouchers.interfaces.IVoucherQueryService;
     import lombok.AllArgsConstructor;
     import org.springframework.stereotype.Service;
 

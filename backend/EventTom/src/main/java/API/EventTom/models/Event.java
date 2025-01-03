@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,16 +31,16 @@ public class Event {
     private String location;
 
     @Column(name = "total_tickets")
-    private long totalTickets;
+    private int totalTickets;
 
     @Column(name = "sold_tickets")
-    private long totalSoldTickets;
+    private int totalSoldTickets;
 
     @Column(name = "threshold_value")
-    private long thresholdValue;
+    private int thresholdValue;
 
     @Column(name = "base_price")
-    private long basePrice;
+    private BigDecimal basePrice;
 
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
@@ -54,7 +55,15 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Ticket> tickets = new ArrayList<>();
 
+    @Transient
+    public boolean isThresholdReached() {
+        return totalSoldTickets >= thresholdValue;
+    }
 
+    @Transient
+    public int getAvailableTickets() {
+        return totalTickets - totalSoldTickets;
+    }
 
 }
 

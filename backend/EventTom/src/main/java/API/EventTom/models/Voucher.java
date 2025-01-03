@@ -5,30 +5,51 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.misc.NotNull;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@AllArgsConstructor
-@NoArgsConstructor
+@Table(name = "vouchers")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long voucherId;
+    private Long id;
 
-    @Column(name = "code", unique = true, nullable = false, length = 20)
+    @Column(nullable = false, unique = true, length = 8)
     private String code;
 
-    @Column(name = "amount")
-    private long amount;
-
-    @Column(name="date_valid_until")
-    private LocalDateTime dateValidUntil;
+    @Column(nullable = false, precision = 10, scale = 2)
+    @NotNull
+    private BigDecimal amount;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "customer_id", nullable = false)
-    @JsonBackReference
+    @JoinColumn(name = "customer_id")
     private Customer customer;
 
+    @Column(nullable = false)
+    private boolean used = false;
+
+    @Column(nullable = false)
+    @NotNull
+    private LocalDateTime expirationDate;
+
+    @Column(nullable = false)
+    @NotNull
+    private LocalDateTime createdAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private VoucherType type;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
 }
+
+

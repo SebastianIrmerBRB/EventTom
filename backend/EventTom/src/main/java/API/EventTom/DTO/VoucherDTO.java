@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -12,6 +13,6 @@ import java.time.LocalDateTime;
 public class VoucherDTO {
 
     public long customerId;
-    public long amount;
+    public BigDecimal amount;
     public LocalDateTime ticketValidUntil;
 }

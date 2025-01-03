@@ -3,6 +3,7 @@ package API.EventTom.controller.users;
 import API.EventTom.DTO.CustomerDTO;
 import API.EventTom.services.users.interfaces.ICustomerService;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/customers")
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class CustomerController {
     ICustomerService customerService;
 

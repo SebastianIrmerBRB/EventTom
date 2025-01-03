@@ -1,4 +1,47 @@
 classDiagram
+    class CustomerRepository {
+    <<Interface>>
+      + findCustomerByCustomerNumber(String) Optional~Customer~
+    }
+    class EmployeeRepository {
+    <<Interface>>
+      + findEmployeeByEmployeeNumber(String) Optional~Employee~
+      + findByRoleAndEvent(Roles, Event) List~Employee~
+    }
+
+    class EventRepository {
+    <<Interface>>
+
+    }
+
+    class NotificationRepository {
+    <<Interface>>
+      + findByRecipientOrderByCreatedAtDesc(User) List~Notification~
+      + findByRecipientAndIsReadOrderByCreatedAtDesc(User, boolean) List~Notification~
+      + markAllAsRead(User) void
+    }
+    class RoleRepository {
+    <<Interface>>
+      + findByName(Roles) Optional~Role~
+    }
+    class TicketRepository {
+    <<Interface>>
+      + findAllTicketsByCustomerNumber(String) List~Ticket~
+      + findAllByEventId(Long) List~Ticket~
+    }
+    class UserRepository {
+    <<Interface>>
+      + findByEmail(String) Optional~User~
+    }
+
+    class VoucherRepository {
+    <<Interface>>
+      + findAllVouchersByCustomerNumber(String) List~Voucher~
+      + findByCode(String) Optional~Voucher~
+    }
+
+
+
     class IVoucherValidator {
         <<interface>>
         +validateVoucher(String voucherCode, String customerId, long purchaseAmount) void

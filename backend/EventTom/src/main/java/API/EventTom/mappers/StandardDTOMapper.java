@@ -49,7 +49,7 @@ public class StandardDTOMapper {
         VoucherDTO voucherDTO = new VoucherDTO();
         voucherDTO.setCustomerId(voucher.getCustomer().getUser().getId());
         voucherDTO.setAmount(voucher.getAmount());
-        voucherDTO.setTicketValidUntil(voucher.getDateValidUntil());
+        voucherDTO.setTicketValidUntil(voucher.getExpirationDate());
         return voucherDTO;
     }
 

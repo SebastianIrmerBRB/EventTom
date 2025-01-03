@@ -15,7 +15,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class WebsiteNotificationServiceImpl implements INotificationService {
     private final NotificationRepository notificationRepository;
-    private final UserRepository personRepository;
+    private final UserRepository userRepository;
 
     @Override
     @Transactional
@@ -35,14 +35,14 @@ public class WebsiteNotificationServiceImpl implements INotificationService {
         //  indem da erst Anfrage gemacht wird und dann
         //  dadurch die Anfrage (aber eig. nich gut, weil für jeden Nutzertyp einzelne Methode)
 
-        User user = personRepository.findById(personId)
+        User user = userRepository.findById(personId)
                 .orElseThrow(() -> new RuntimeException("Person not found"));
         return notificationRepository.findByRecipientAndIsReadOrderByCreatedAtDesc(user, false);
     }
 
     @Transactional(readOnly = true)
     public List<Notification> getAllNotificationsByPersonId(Long personId) {
-        User user = personRepository.findById(personId)
+        User user = userRepository.findById(personId)
                 .orElseThrow(() -> new RuntimeException("Person not found"));
         return notificationRepository.findByRecipientOrderByCreatedAtDesc(user);
     }
@@ -57,15 +57,15 @@ public class WebsiteNotificationServiceImpl implements INotificationService {
 
     @Transactional
     public void markAllAsReadByPersonId(Long personId) {
-        User user = personRepository.findById(personId)
+        User user = userRepository.findById(personId)
                 .orElseThrow(() -> new RuntimeException("Person not found"));
         notificationRepository.markAllAsRead(user);
     }
 
     // Method for testing/prototyping
     @Transactional
-    public void createTestNotification(Long personId) {
-        User user = personRepository.findById(personId)
+    public void createTestNotification(Long userId) {
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Person not found"));
 
         Notification notification = new Notification();
