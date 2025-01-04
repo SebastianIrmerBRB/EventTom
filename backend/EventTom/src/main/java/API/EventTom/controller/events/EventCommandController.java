@@ -18,7 +18,6 @@ public class EventCommandController {
     private final IEventCommandService eventCommandService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasRole('EVENT_MANAGER')")
     public ResponseEntity<EventDTO> createEvent( @RequestBody EventCreateDTO eventCreateDTO) {
         return new ResponseEntity<>(eventCommandService.createEvent(eventCreateDTO), HttpStatus.CREATED);
     }

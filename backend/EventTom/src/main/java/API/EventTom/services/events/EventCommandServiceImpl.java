@@ -8,6 +8,8 @@ import API.EventTom.models.Employee;
 import API.EventTom.models.Event;
 import API.EventTom.repositories.EmployeeRepository;
 import API.EventTom.repositories.EventRepository;
+import API.EventTom.services.notifications.WebSocketNotificationService;
+import API.EventTom.services.notifications.WebsiteNotificationServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,6 +20,8 @@ public class EventCommandServiceImpl implements IEventCommandService {
     private final EventRepository eventRepository;
     private final EmployeeRepository employeeRepository;
     private final StandardDTOMapper standardDTOMapper;
+    private final WebsiteNotificationServiceImpl dbNotificationService;
+    private final WebSocketNotificationService wsNotificationService;
 
     @Override
     @Transactional
@@ -36,7 +40,12 @@ public class EventCommandServiceImpl implements IEventCommandService {
         event.setCreator(manager);
         event.setLocation(eventCreateDTO.getLocation());
         Event savedEvent = eventRepository.save(event);
-        return standardDTOMapper.mapEventToEventDTO(savedEvent);
+        EventDTO eventDTO = standardDTOMapper.mapEventToEventDTO(savedEvent);
+        System.out.println("test123");
+        wsNotificationService.notifyEventCreated(eventDTO);
+        System.out.println("test1234");
+
+        return eventDTO;
     }
 
     @Override
