@@ -35,7 +35,7 @@ public class EventQueryServiceImpl implements IEventQueryService {
 
     @Override
     public List<EventDTO> getEventsByManagerId(long managerId) {
-        return eventRepository.findByManagerId(managerId).stream()
+        return eventRepository.findByManagers_Id(managerId).stream()
                 .map(standardDTOMapper::mapEventToEventDTO)
                 .collect(Collectors.toList());
     }

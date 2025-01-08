@@ -54,10 +54,12 @@ public class JwtUtils {
     public boolean validateJwtToken(String authToken) {
         try {
             Jwts.parser()
-                    .verifyWith(key())  // changed from setSigningKey
+                    .verifyWith(key())
                     .build()
-                    .parse(authToken);
+                    .parseSignedClaims(authToken);  // Changed from parse() to parseSignedClaims()
             return true;
+        } catch (SecurityException e) {
+            logger.error("Invalid JWT signature: {}", e.getMessage());
         } catch (MalformedJwtException e) {
             logger.error("Invalid JWT token: {}", e.getMessage());
         } catch (ExpiredJwtException e) {
@@ -67,7 +69,6 @@ public class JwtUtils {
         } catch (IllegalArgumentException e) {
             logger.error("JWT claims string is empty: {}", e.getMessage());
         }
-
         return false;
     }
 
@@ -81,7 +82,7 @@ public class JwtUtils {
                 .claim("roles", formattedRoles)
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
-                .signWith(key())
+                .signWith(key(), Jwts.SIG.HS512)  // Explicitly specify HS512
                 .compact();
     }
 }

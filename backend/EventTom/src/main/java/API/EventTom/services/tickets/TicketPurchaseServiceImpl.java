@@ -2,6 +2,8 @@ package API.EventTom.services.tickets;
 
 import API.EventTom.DTO.request.PurchaseTicketDTO;
 import API.EventTom.DTO.response.TicketPurchaseResponseDTO;
+import API.EventTom.exceptions.EventDatePassedException;
+import API.EventTom.exceptions.InvalidPurchaseAmountException;
 import API.EventTom.exceptions.RuntimeExceptions.CustomerNotFoundException;
 import API.EventTom.exceptions.RuntimeExceptions.EventNotFoundException;
 import API.EventTom.exceptions.RuntimeExceptions.InsufficientTicketsException;
@@ -13,10 +15,18 @@ import API.EventTom.observers.TicketPurchaseEvent;
 import API.EventTom.repositories.CustomerRepository;
 import API.EventTom.repositories.EventRepository;
 import API.EventTom.repositories.TicketRepository;
+import API.EventTom.services.notifications.INotificationService;
+import API.EventTom.services.notifications.WebSocketNotificationService;
+import API.EventTom.services.notifications.WebsiteNotificationServiceImpl;
+import API.EventTom.services.tickets.interfaces.ITicketCreationService;
+import API.EventTom.services.tickets.interfaces.ITicketPriceCalculator;
 import API.EventTom.services.tickets.interfaces.ITicketPurchaseService;
+import API.EventTom.services.tickets.interfaces.ITicketValidator;
 import API.EventTom.services.vouchers.interfaces.IVoucherUsageService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
+import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
@@ -29,113 +39,73 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
+@Slf4j
 public class TicketPurchaseServiceImpl implements ITicketPurchaseService {
     private final EventRepository eventRepository;
     private final CustomerRepository customerRepository;
-    private final TicketRepository ticketRepository;
-    private final ApplicationEventPublisher eventPublisher;
     private final IVoucherUsageService voucherUsageService;
+    private final ITicketPriceCalculator priceCalculator;
+    private final ITicketValidator ticketValidator;
+    private final ITicketCreationService ticketCreationService;
+    private final WebSocketNotificationService webSocketService;
 
     @Override
     public BigDecimal calculateTotalPrice(PurchaseTicketDTO purchaseTicketDTO, Long userId) {
-        Event event = eventRepository.findById(purchaseTicketDTO.getEventId())
-                .orElseThrow(() -> new EventNotFoundException(purchaseTicketDTO.getEventId()));
+        Event event = findEvent(purchaseTicketDTO.getEventId());
+        ticketValidator.validatePurchaseRequest(event, purchaseTicketDTO);
 
-        validateTicketAvailability(event, purchaseTicketDTO.getAmount());
-
-        Customer customer = customerRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found for user ID: " + userId));
-
-        BigDecimal currentPrice = calculateTicketPrice(event);
-        BigDecimal totalPrice = currentPrice.multiply(BigDecimal.valueOf(purchaseTicketDTO.getAmount()));
-
-        if (purchaseTicketDTO.getVoucherCode() != null && !purchaseTicketDTO.getVoucherCode().isEmpty()) {
-            Voucher voucher = voucherUsageService.validateVoucher(purchaseTicketDTO.getVoucherCode());
-            totalPrice = voucherUsageService.calculateDiscountedAmount(totalPrice, voucher);
-        }
-
-        return totalPrice;
+        return priceCalculator.calculateTotalPrice(
+                event,
+                purchaseTicketDTO.getAmount(),
+                purchaseTicketDTO.getVoucherCodes()
+        );
     }
 
     @Override
     @Transactional
     public TicketPurchaseResponseDTO purchaseTicket(PurchaseTicketDTO purchaseTicketDTO, Long userId) {
-        Event event = eventRepository.findById(purchaseTicketDTO.getEventId())
-                .orElseThrow(() -> new EventNotFoundException(purchaseTicketDTO.getEventId()));
+        Event event = findEvent(purchaseTicketDTO.getEventId());
+        Customer customer = findCustomer(userId);
 
-        validateTicketAvailability(event, purchaseTicketDTO.getAmount());
+        ticketValidator.validatePurchaseRequest(event, purchaseTicketDTO);
 
-        Customer customer = customerRepository.findByUserId(userId)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found for user ID: " + userId));
+        BigDecimal baseTicketPrice = priceCalculator.calculateBasePrice(event);
+        List<Voucher> validatedVouchers = voucherUsageService.validateVouchers(purchaseTicketDTO.getVoucherCodes());
+        BigDecimal totalVoucherDiscount = voucherUsageService.calculateTotalDiscount(validatedVouchers);
+        voucherUsageService.markVouchersAsUsed(validatedVouchers, customer.getId());
 
-        BigDecimal finalPrice = calculateTotalPrice(purchaseTicketDTO, userId);
-
-        if (purchaseTicketDTO.getVoucherCode() != null && !purchaseTicketDTO.getVoucherCode().isEmpty()) {
-            voucherUsageService.useVoucherForPurchase(
-                    purchaseTicketDTO.getVoucherCode(),
-                    customer.getId(),
-                    finalPrice
-            );
-        }
-
-        BigDecimal pricePerTicket = finalPrice.divide(BigDecimal.valueOf(purchaseTicketDTO.getAmount()),
-                2, RoundingMode.HALF_UP);
-
-        List<Long> ticketIds = new ArrayList<>();
-
-        for (int i = 0; i < purchaseTicketDTO.getAmount(); i++) {
-            Ticket ticket = createTicket(event, customer, pricePerTicket);
-            ticket = ticketRepository.save(ticket);
-            ticketIds.add(ticket.getId());
-            publishTicketPurchaseEvent(ticket, event);
-        }
+        PurchaseResult purchaseResult = ticketCreationService.processTicketPurchase(
+                event, customer, purchaseTicketDTO.getAmount(),
+                baseTicketPrice, totalVoucherDiscount
+        );
 
         eventRepository.save(event);
+        webSocketService.notifyEventManagersTicketSale(event);
 
+        return createPurchaseResponse(event, purchaseResult, baseTicketPrice);
+    }
+
+    private Event findEvent(Long eventId) {
+        return eventRepository.findById(eventId)
+                .orElseThrow(() -> new EventNotFoundException(eventId));
+    }
+
+    private Customer findCustomer(Long userId) {
+        return customerRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found for user ID: " + userId));
+    }
+
+    private TicketPurchaseResponseDTO createPurchaseResponse(
+            Event event, PurchaseResult result, BigDecimal baseTicketPrice) {
         return new TicketPurchaseResponseDTO(
                 event.getTitle(),
                 event.getDateOfEvent(),
-                purchaseTicketDTO.getAmount(),
-                finalPrice,
-                pricePerTicket,
-                ticketIds,
+                result.ticketIds().size(),
+                result.totalPrice(),
+                baseTicketPrice,
+                result.ticketIds(),
                 event.getLocation()
         );
     }
 
-
-    private void validateTicketAvailability(Event event, int requestedAmount) {
-        if (event.getAvailableTickets() < requestedAmount) {
-            throw new InsufficientTicketsException(
-                    String.format("Not enough tickets available. Requested: %d, Available: %d",
-                            requestedAmount, event.getAvailableTickets())
-            );
-        }
-    }
-
-    private BigDecimal calculateTicketPrice(Event event) {
-        BigDecimal basePrice = event.getBasePrice();
-
-        if (event.isThresholdReached()) {
-            return basePrice.multiply(BigDecimal.valueOf(1.2));
-        }
-
-        return basePrice;
-    }
-
-    private Ticket createTicket(Event event, Customer customer, BigDecimal finalPrice) {
-        Ticket ticket = new Ticket();
-        ticket.setEvent(event);
-        ticket.setCustomer(customer);
-        ticket.setPurchaseDate(LocalDateTime.now());
-        ticket.setStatusUsed(false);
-        ticket.setBasePrice(finalPrice);
-        return ticket;
-    }
-
-    private void publishTicketPurchaseEvent(Ticket ticket, Event event) {
-        eventPublisher.publishEvent(new TicketPurchaseEvent(this, ticket, event));
-    }
 }
-
-

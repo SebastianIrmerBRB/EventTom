@@ -2,6 +2,7 @@ package API.EventTom.exceptions;
 
 import API.EventTom.DTO.response.ErrorMessageDTO;
 
+import io.jsonwebtoken.JwtException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 
@@ -43,6 +44,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorMessageDTO> handleMethodNotAllowedException(Exception e) {
         return buildResponseEntity("Method not allowed", HttpStatus.METHOD_NOT_ALLOWED, e);
 
+    }
+
+    @ExceptionHandler(JwtException.class)
+    public ResponseEntity<ErrorMessageDTO> handleJwtException(JwtException e) {
+        return buildResponseEntity("Invalid token", HttpStatus.UNAUTHORIZED, e);
     }
 
     @ExceptionHandler(RuntimeException.class)

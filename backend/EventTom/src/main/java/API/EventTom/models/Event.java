@@ -47,9 +47,13 @@ public class Event {
     private Employee creator;
 
     @ToString.Exclude
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manager_id", nullable = false)
-    private Employee manager;
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "event_managers",
+            joinColumns = @JoinColumn(name = "event_id"),
+            inverseJoinColumns = @JoinColumn(name = "employee_id")
+    )
+    private List<Employee> managers = new ArrayList<>();
 
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Ticket> tickets = new ArrayList<>();

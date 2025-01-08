@@ -6,6 +6,6 @@ import API.EventTom.DTO.response.TicketPurchaseResponseDTO;
 import java.math.BigDecimal;
 
 public interface ITicketPurchaseService {
-    BigDecimal calculateTotalPrice(PurchaseTicketDTO purchaseTicketDTO, Long userId);
     TicketPurchaseResponseDTO purchaseTicket(PurchaseTicketDTO purchaseTicketDTO, Long userId);
+    BigDecimal calculateTotalPrice(PurchaseTicketDTO purchaseTicketDTO, Long userId);
 }

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,6 +18,5 @@ public class EventCreateDTO {
     private int totalTickets;
     private int thresholdValue;
     private BigDecimal basePrice;
-    private Long managerId;
-
+    private List<Long> managerIds;
 }

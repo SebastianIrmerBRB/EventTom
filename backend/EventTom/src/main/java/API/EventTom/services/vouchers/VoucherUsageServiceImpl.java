@@ -9,6 +9,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -18,7 +21,7 @@ class VoucherUsageServiceImpl implements IVoucherUsageService {
 
     @Override
     @Transactional
-    public void useVoucherForPurchase(String code, Long customerId, BigDecimal purchaseAmount) {
+    public void useVoucherForPurchase(String code, Long customerId) {
         Voucher voucher = validationService.validateVoucherExists(code);
         validationService.validateVoucherNotExpired(voucher);
         validationService.validateVoucherNotUsed(voucher);
@@ -29,8 +32,15 @@ class VoucherUsageServiceImpl implements IVoucherUsageService {
     }
 
     @Override
-    public BigDecimal calculateDiscountedAmount(BigDecimal originalAmount, Voucher voucher) {
-        return originalAmount.subtract(voucher.getAmount()).max(BigDecimal.ZERO);
+    @Transactional
+    public void markVouchersAsUsed(List<Voucher> vouchers, Long customerId) {
+        if (vouchers == null || vouchers.isEmpty()) {
+            return;
+        }
+
+        for (Voucher voucher : vouchers) {
+            useVoucherForPurchase(voucher.getCode(), customerId);
+        }
     }
 
     @Override
@@ -42,5 +52,29 @@ class VoucherUsageServiceImpl implements IVoucherUsageService {
 
         return voucher;
     }
+    @Override
+    public List<Voucher> validateVouchers(List<String> codes) {
+        if (codes == null || codes.isEmpty()) {
+            return new ArrayList<>();
+        }
 
+        return codes.stream()
+                .map(this::validateVoucher)
+                .collect(Collectors.toList());
+    }
+    @Override
+    public BigDecimal calculateDiscountedAmount(BigDecimal originalAmount, Voucher voucher) {
+        return originalAmount.subtract(voucher.getAmount()).max(BigDecimal.ZERO);
+    }
+
+    @Override
+    public BigDecimal calculateTotalDiscount(List<Voucher> vouchers) {
+        if (vouchers == null || vouchers.isEmpty()) {
+            return BigDecimal.ZERO;
+        }
+
+        return vouchers.stream()
+                .map(Voucher::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
 }

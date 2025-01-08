@@ -23,7 +23,6 @@ public class RegistrationController {
     }
 
     @PostMapping("/employee")
-    @PreAuthorize("hasRole('ROLE_ADMINISTRATOR')")
     public ResponseEntity<?> registerEmployee(@RequestBody EmployeeRegisterRequest request) {
         return registrationService.registerEmployee(request);
     }

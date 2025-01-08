@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 public interface IEventCommandService {
     @Transactional
-    EventDTO createEvent(EventCreateDTO eventCreateDTO);
+    EventDTO createEvent(EventCreateDTO eventCreateDTO, Long userId);
 
     EventDTO updateEvent(long id, EventUpdateDTO eventUpdateDTO);
 

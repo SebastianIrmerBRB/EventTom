@@ -1,5 +1,6 @@
 package API.EventTom.services.notifications;
 
+import API.EventTom.models.Event;
 import API.EventTom.models.Notification;
 import API.EventTom.models.User;
 import API.EventTom.repositories.NotificationRepository;
@@ -76,4 +77,7 @@ public class WebsiteNotificationServiceImpl implements INotificationService {
 
         notificationRepository.save(notification);
     }
+
+
+
 }

@@ -3,9 +3,7 @@ package API.EventTom.models;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,6 +34,6 @@ public class Employee {
     private List<Event> createdEvents = new ArrayList<>();
 
     // Events managed by this employee
-    @OneToMany(mappedBy = "manager", cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "managers")
     private List<Event> managedEvents = new ArrayList<>();
 }

@@ -18,8 +18,8 @@ public class EventCommandController {
     private final IEventCommandService eventCommandService;
 
     @PostMapping("/create")
-    public ResponseEntity<EventDTO> createEvent( @RequestBody EventCreateDTO eventCreateDTO) {
-        return new ResponseEntity<>(eventCommandService.createEvent(eventCreateDTO), HttpStatus.CREATED);
+    public ResponseEntity<EventDTO> createEvent( @RequestBody EventCreateDTO eventCreateDTO, @AuthenticatedUserId Long userId) {
+        return new ResponseEntity<>(eventCommandService.createEvent(eventCreateDTO, userId), HttpStatus.CREATED);
     }
 
     @PutMapping("/update/{id}")

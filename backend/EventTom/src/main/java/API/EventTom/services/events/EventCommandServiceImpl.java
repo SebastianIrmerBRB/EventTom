@@ -14,6 +14,9 @@ import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
 @AllArgsConstructor
 public class EventCommandServiceImpl implements IEventCommandService {
@@ -25,28 +28,34 @@ public class EventCommandServiceImpl implements IEventCommandService {
 
     @Override
     @Transactional
-    public EventDTO createEvent(EventCreateDTO eventCreateDTO) {
-        Employee manager = employeeRepository.findById(eventCreateDTO.getManagerId())
-                .orElseThrow(() -> new ResourceNotFoundException("Manager not found"));
-        Event event = new Event();
+    public EventDTO createEvent(EventCreateDTO eventCreateDTO, Long userId) {
+        // Find all managers
+        List<Employee> managers = eventCreateDTO.getManagerIds().stream()
+                .map(id -> employeeRepository.findById(id)
+                        .orElseThrow(() -> new ResourceNotFoundException("Manager not found with ID: " + id)))
+                .collect(Collectors.toList());
 
+        // Find the creator (assuming creator ID is separate from manager IDs)
+        Employee creator = employeeRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Creator not found"));
+
+        Event event = new Event();
         event.setTitle(eventCreateDTO.getTitle());
         event.setDateOfEvent(eventCreateDTO.getDateOfEvent());
         event.setMaxTotalTickets(eventCreateDTO.getTotalTickets());
         event.setThresholdValue(eventCreateDTO.getThresholdValue());
         event.setBasePrice(eventCreateDTO.getBasePrice());
-        event.setManager(manager);
-        event.setCreator(manager);
+        event.setManagers(managers);
+        event.setCreator(creator);
         event.setLocation(eventCreateDTO.getLocation());
+
         Event savedEvent = eventRepository.save(event);
         EventDTO eventDTO = standardDTOMapper.mapEventToEventDTO(savedEvent);
-        System.out.println("test123");
+
         wsNotificationService.notifyEventCreated(eventDTO);
-        System.out.println("test1234");
 
         return eventDTO;
     }
-
     @Override
     @Transactional
     public EventDTO updateEvent(long id, EventUpdateDTO eventUpdateDTO) {
