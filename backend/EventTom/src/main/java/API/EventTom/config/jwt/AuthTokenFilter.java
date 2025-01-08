@@ -49,11 +49,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             }
 
             String jwt = parseJwt(request);
-            if (jwt == null) {
-                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                response.getWriter().write("No token provided");
-                return;
-            }
+
 
             try {
                 if (!jwtUtils.validateJwtToken(jwt)) {

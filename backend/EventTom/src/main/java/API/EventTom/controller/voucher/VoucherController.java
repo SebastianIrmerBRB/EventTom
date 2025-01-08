@@ -68,7 +68,6 @@ public class VoucherController {
     public ResponseEntity<VoucherResponse> claimVoucher(
             @PathVariable String code,
             @AuthenticatedUserId Long userId) {
-        System.out.println(userId);
         Voucher voucher = voucherClaimService.claimVoucher(code, userId);
         return ResponseEntity.ok(VoucherResponse.fromVoucher(voucher));
     }
