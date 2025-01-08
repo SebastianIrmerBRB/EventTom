@@ -14,17 +14,14 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class TicketNotificationListener {
-    // TODO: remove this repo call (use service)
     private final EmployeeRepository employeeRepository;
     private final INotificationService notificationService;
 
     @Async
     @EventListener
     public void handleTicketPurchase(TicketPurchaseEvent event) {
-        // Send confirmation to customer
         sendCustomerNotification(event, "TICKET_PURCHASE");
 
-        // Check if managers need to be notified
         if (shouldNotifyEventManager(event)) {
             sendManagerNotification(event, "TICKET_PURCHASE");
         }
@@ -46,10 +43,9 @@ public class TicketNotificationListener {
     }
 
     private boolean shouldNotifyEventManager(TicketPurchaseEvent event) {
-        boolean reachedThreshold = event.getEvent().getTotalSoldTickets() >= event.getEvent().getThresholdValue();
-        boolean almostSoldOut = event.getSoldPercentage() >= 90.0;
-        boolean lowTickets = event.getRemainingTickets() <= 10;
-        return true; // reachedThreshold || almostSoldOut || lowTickets;
+        return event.getEvent().isThresholdReached() ||
+                event.getSoldPercentage() >= 90.0 ||
+                event.getRemainingTickets() <= 10;
     }
 
     private String createManagerMessage(TicketPurchaseEvent event) {

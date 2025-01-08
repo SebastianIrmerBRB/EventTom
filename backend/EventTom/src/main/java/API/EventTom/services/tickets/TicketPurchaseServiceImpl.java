@@ -1,6 +1,7 @@
 package API.EventTom.services.tickets;
 
 import API.EventTom.DTO.request.PurchaseTicketDTO;
+import API.EventTom.DTO.response.TicketPurchaseResponseDTO;
 import API.EventTom.exceptions.RuntimeExceptions.CustomerNotFoundException;
 import API.EventTom.exceptions.RuntimeExceptions.EventNotFoundException;
 import API.EventTom.exceptions.RuntimeExceptions.InsufficientTicketsException;
@@ -20,7 +21,10 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -33,39 +37,72 @@ public class TicketPurchaseServiceImpl implements ITicketPurchaseService {
     private final IVoucherUsageService voucherUsageService;
 
     @Override
-    @Transactional
-    public void purchaseTicket(PurchaseTicketDTO purchaseTicketDTO) {
+    public BigDecimal calculateTotalPrice(PurchaseTicketDTO purchaseTicketDTO, Long userId) {
         Event event = eventRepository.findById(purchaseTicketDTO.getEventId())
                 .orElseThrow(() -> new EventNotFoundException(purchaseTicketDTO.getEventId()));
 
-        // Check if enough tickets are available
         validateTicketAvailability(event, purchaseTicketDTO.getAmount());
 
-        Customer customer = customerRepository.findCustomerByCustomerNumber(purchaseTicketDTO.getCustomerNumber())
-                .orElseThrow(() -> new CustomerNotFoundException(purchaseTicketDTO.getCustomerNumber()));
+        Customer customer = customerRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found for user ID: " + userId));
 
         BigDecimal currentPrice = calculateTicketPrice(event);
         BigDecimal totalPrice = currentPrice.multiply(BigDecimal.valueOf(purchaseTicketDTO.getAmount()));
 
-        BigDecimal finalPrice = totalPrice;
         if (purchaseTicketDTO.getVoucherCode() != null && !purchaseTicketDTO.getVoucherCode().isEmpty()) {
             Voucher voucher = voucherUsageService.validateVoucher(purchaseTicketDTO.getVoucherCode());
-            finalPrice = voucherUsageService.calculateDiscountedAmount(totalPrice, voucher);
+            totalPrice = voucherUsageService.calculateDiscountedAmount(totalPrice, voucher);
+        }
+
+        return totalPrice;
+    }
+
+    @Override
+    @Transactional
+    public TicketPurchaseResponseDTO purchaseTicket(PurchaseTicketDTO purchaseTicketDTO, Long userId) {
+        Event event = eventRepository.findById(purchaseTicketDTO.getEventId())
+                .orElseThrow(() -> new EventNotFoundException(purchaseTicketDTO.getEventId()));
+
+        validateTicketAvailability(event, purchaseTicketDTO.getAmount());
+
+        Customer customer = customerRepository.findByUserId(userId)
+                .orElseThrow(() -> new CustomerNotFoundException("Customer not found for user ID: " + userId));
+
+        BigDecimal finalPrice = calculateTotalPrice(purchaseTicketDTO, userId);
+
+        if (purchaseTicketDTO.getVoucherCode() != null && !purchaseTicketDTO.getVoucherCode().isEmpty()) {
             voucherUsageService.useVoucherForPurchase(
                     purchaseTicketDTO.getVoucherCode(),
                     customer.getId(),
-                    totalPrice
+                    finalPrice
             );
         }
 
+        BigDecimal pricePerTicket = finalPrice.divide(BigDecimal.valueOf(purchaseTicketDTO.getAmount()),
+                2, RoundingMode.HALF_UP);
+
+        List<Long> ticketIds = new ArrayList<>();
+
         for (int i = 0; i < purchaseTicketDTO.getAmount(); i++) {
-            Ticket ticket = createTicket(event, customer, finalPrice.divide(BigDecimal.valueOf(purchaseTicketDTO.getAmount())));
+            Ticket ticket = createTicket(event, customer, pricePerTicket);
             ticket = ticketRepository.save(ticket);
+            ticketIds.add(ticket.getId());
             publishTicketPurchaseEvent(ticket, event);
         }
 
         eventRepository.save(event);
+
+        return new TicketPurchaseResponseDTO(
+                event.getTitle(),
+                event.getDateOfEvent(),
+                purchaseTicketDTO.getAmount(),
+                finalPrice,
+                pricePerTicket,
+                ticketIds,
+                event.getLocation()
+        );
     }
+
 
     private void validateTicketAvailability(Event event, int requestedAmount) {
         if (event.getAvailableTickets() < requestedAmount) {

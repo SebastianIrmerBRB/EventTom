@@ -10,14 +10,14 @@ import org.springframework.context.ApplicationEvent;
 public class TicketPurchaseEvent extends ApplicationEvent {
     private final Ticket ticket;
     private final Event event;
-    private final long remainingTickets;
+    private final int remainingTickets;
     private final double soldPercentage;
 
     public TicketPurchaseEvent(Object source, Ticket ticket, Event event) {
         super(source);
         this.ticket = ticket;
         this.event = event;
-        this.remainingTickets = event.getMaxTotalTickets() - event.getTotalSoldTickets();
-        this.soldPercentage = (double) event.getTotalSoldTickets() / event.getMaxTotalTickets() * 100;
+        this.remainingTickets = event.getAvailableTickets();
+        this.soldPercentage = (double) (event.getTotalSoldTickets()) / event.getMaxTotalTickets() * 100;
     }
 }

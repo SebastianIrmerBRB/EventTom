@@ -37,7 +37,6 @@ public class User implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-
     @CreatedDate
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

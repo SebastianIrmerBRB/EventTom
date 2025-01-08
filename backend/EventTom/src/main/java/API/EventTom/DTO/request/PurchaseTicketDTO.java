@@ -13,9 +13,7 @@ import lombok.NoArgsConstructor;
 public class PurchaseTicketDTO {
 
     Long eventId;
-    Long ticketId;
     int amount;
     String voucherCode;
-    String customerNumber;
-    Long voucherId;
+
 }

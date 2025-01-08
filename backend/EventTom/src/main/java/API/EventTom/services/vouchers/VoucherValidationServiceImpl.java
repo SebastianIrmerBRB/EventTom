@@ -47,6 +47,10 @@ class VoucherValidationServiceImpl implements IVoucherValidationService {
 
     @Override
     public void validateVoucherOwnership(Voucher voucher, Long customerId) {
+        if (voucher.getCustomer() == null) {
+            return;
+        }
+
         if (!voucher.getCustomer().getId().equals(customerId)) {
             throw new UnauthorizedVoucherUseException("This voucher belongs to another customer");
         }

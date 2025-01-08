@@ -18,14 +18,14 @@ class VoucherUsageServiceImpl implements IVoucherUsageService {
 
     @Override
     @Transactional
-    public Voucher useVoucherForPurchase(String code, Long customerId, BigDecimal purchaseAmount) {
+    public void useVoucherForPurchase(String code, Long customerId, BigDecimal purchaseAmount) {
         Voucher voucher = validationService.validateVoucherExists(code);
         validationService.validateVoucherNotExpired(voucher);
         validationService.validateVoucherNotUsed(voucher);
         validationService.validateVoucherOwnership(voucher, customerId);
 
         voucher.setUsed(true);
-        return voucherRepository.save(voucher);
+        voucherRepository.save(voucher);
     }
 
     @Override
