@@ -61,7 +61,7 @@ public class TicketNotificationListener {
                         "Purchase Time: %s",
                 event.getEvent().getTitle(),
                 event.getEvent().getTotalSoldTickets(),
-                event.getEvent().getTotalTickets(),
+                event.getEvent().getMaxTotalTickets(),
                 event.getSoldPercentage(),
                 event.getRemainingTickets(),
                 event.getTicket().getCustomer().toString(),

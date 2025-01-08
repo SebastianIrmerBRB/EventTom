@@ -32,8 +32,7 @@ public class EventCommandServiceImpl implements IEventCommandService {
 
         event.setTitle(eventCreateDTO.getTitle());
         event.setDateOfEvent(eventCreateDTO.getDateOfEvent());
-        event.setTotalTickets(eventCreateDTO.getTotalTickets());
-        event.setTotalSoldTickets(0);
+        event.setMaxTotalTickets(eventCreateDTO.getTotalTickets());
         event.setThresholdValue(eventCreateDTO.getThresholdValue());
         event.setBasePrice(eventCreateDTO.getBasePrice());
         event.setManager(manager);
@@ -56,7 +55,7 @@ public class EventCommandServiceImpl implements IEventCommandService {
 
         event.setTitle(eventUpdateDTO.getTitle());
         event.setDateOfEvent(eventUpdateDTO.getDateOfEvent());
-        event.setTotalTickets(eventUpdateDTO.getTotalTickets());
+        event.setMaxTotalTickets(eventUpdateDTO.getTotalTickets());
         event.setThresholdValue(eventUpdateDTO.getThresholdValue());
         event.setBasePrice(eventUpdateDTO.getBasePrice());
 

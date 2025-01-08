@@ -30,12 +30,11 @@ public class Event {
     @Column(name = "location", nullable = false)
     private String location;
 
-    @Column(name = "total_tickets")
-    private int totalTickets;
+    // absolut maximum of allowed tickets
+    @Column(name = "max_total_tickets")
+    private int maxTotalTickets;
 
-    @Column(name = "sold_tickets")
-    private int totalSoldTickets;
-
+    // value for price increase
     @Column(name = "threshold_value")
     private int thresholdValue;
 
@@ -57,12 +56,17 @@ public class Event {
 
     @Transient
     public boolean isThresholdReached() {
-        return totalSoldTickets >= thresholdValue;
+        return tickets.size() >= thresholdValue;
     }
 
     @Transient
     public int getAvailableTickets() {
-        return totalTickets - totalSoldTickets;
+        return maxTotalTickets - tickets.size();
+    }
+
+    @Transient
+    public int getTotalSoldTickets() {
+        return tickets.size();
     }
 
 }

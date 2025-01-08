@@ -2,11 +2,7 @@ package API.EventTom.observers;
 
 import API.EventTom.models.Event;
 import API.EventTom.models.Ticket;
-import jakarta.annotation.sql.DataSourceDefinitions;
-import lombok.AllArgsConstructor;
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.springframework.context.ApplicationEvent;
 
 
@@ -21,7 +17,7 @@ public class TicketPurchaseEvent extends ApplicationEvent {
         super(source);
         this.ticket = ticket;
         this.event = event;
-        this.remainingTickets = event.getTotalTickets() - event.getTotalSoldTickets();
-        this.soldPercentage = (double) event.getTotalSoldTickets() / event.getTotalTickets() * 100;
+        this.remainingTickets = event.getMaxTotalTickets() - event.getTotalSoldTickets();
+        this.soldPercentage = (double) event.getTotalSoldTickets() / event.getMaxTotalTickets() * 100;
     }
 }
